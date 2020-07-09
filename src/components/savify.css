@@ -1,0 +1,12 @@
+
+.navbar {
+    background-color: blueviolet;
+}
+
+.navbar img{
+    background-color: #c197fc;
+    border-radius: 15px; 
+    width: 130px;
+    height: 40px;
+    
+}

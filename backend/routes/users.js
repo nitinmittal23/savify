@@ -39,7 +39,6 @@ router.route('/update/:id').post((req, res) => {
             user.USDC = req.body.USDC;
             user.trans.push({fromTo: req.body.fromTo, amount: req.body.amount })
             
-
             user.save()
                 .then(() => res.json('user updated!'))
                 .catch(err => res.status(400).json('Error: ' + err));

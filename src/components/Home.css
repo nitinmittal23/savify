@@ -81,6 +81,7 @@ html {
 }
 #container img {
    width: 500px;
+   border-radius: 15px;
 }
 
 #container h1:after {
