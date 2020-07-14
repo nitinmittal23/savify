@@ -1,12 +1,95 @@
-
+#whole {
+    background-color: #EEF0F1;
+    padding-top: 55px;
+    overflow: auto;
+}
+body {
+    overflow: hidden;
+}
+html {
+    background-color: #EEF0F1;
+}
 .navbar {
-    background-color: blueviolet;
+    background-color: #EEF0F1;
+
+}
+#test {
+    float: right; 
+    padding-top: 17px;  
+}
+#navbar img{
+    background-color: #EEF0F1;
+    width: 1248px;
+    height: 60px; 
+    padding-left: 20px;
+    padding-right: 1088px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
-.navbar img{
-    background-color: #c197fc;
-    border-radius: 15px; 
-    width: 130px;
-    height: 40px;
+.sidenav {
+    height: 100%; 
+    width: 9%; 
+    position: fixed; 
+    z-index: 1; 
+    top: 0; 
+    left: 0;
+    background-color: #5C1AC3; 
+    overflow-x: hidden; 
+    padding-top: 80px; 
+    transition: 0.5s; 
+    padding-left: 15px;
+}
+
+.sidenav a {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.sidenav img {
+    height: 45px;
+}
+
+.navbar button{
+    color: azure;
+    font-weight: bold;
+    background-color: #1298F6;
+    width: 160px;
+    height: 35px;
+    border-radius: 10px;
+    border: none;
+    right: 0;
+    float: right;
+}
+
+#maincontent {
+    padding-left: 150px;
+    padding-right: 20px;
+    padding-top: 80px;
+    background-color: #EEF0F1;
     
+}
+
+#summary1, #summary2, #summary3, #summary4{
+    background-color: #ffffff;
+    border-radius: 5px;
+    padding-top: 15px;
+    display: inline-flex;
+    margin-right: 20px;
+    padding-bottom: 15px;
+}
+
+#progress {
+    width: 100px;
+}
+.value{
+    padding-bottom: 0;
+    margin-bottom: 00px;
+    color: #5C1AC3;
+    font-weight: bold;
+    font-size: 15px;
+
+} 
+.cardhead{
+    font-weight: bold;
 }
