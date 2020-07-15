@@ -34,23 +34,28 @@ class App extends Component {
             shortnerAddress: "",
             errMessage: "",
             interestRate: {
-                Dai: {
+                dai: {
                     compound: 0,
                     aave: 0,
                     dydx: 0,
                 },
-                Eth: {
+                eth: {
                     compound: 0,
                     aave: 0,
                     dydx: 0,
                 },
-                USDC: {
+                usdc: {
                     compound: 0,
                     aave: 0,
                     dydx: 0,
                 },
             },
-            protocol: {
+            protocolassetPresent: {
+                dai: "",
+                eth: "",
+                usdc: ""
+            },
+            protocolinterestmax: {
                 dai: "",
                 eth: "",
                 usdc: ""
@@ -79,6 +84,18 @@ class App extends Component {
         
     }
 
+    login = async () => {
+        try {
+            await this.loadWeb3();
+            await this.loadBlockchainData();
+            await this.showShortner()
+            this.setState({ buttonText: this.state.shortnerAddress});
+        } catch (err) {
+            this.setState({ buttonText: "Try Again", errMessage: "Please select Mainnet in your wallet" });
+            //this.showErrorModal();   
+        }
+    };
+
     async loadWeb3() {
         const providerOptions = {
             /* See Provider Options Section */
@@ -95,18 +112,6 @@ class App extends Component {
         const web3 = new Web3(provider);
         this.setState({ web3 });
     }
-
-    login = async () => {
-        try {
-            await this.loadWeb3();
-            await this.loadBlockchainData();
-            await this.showShortner()
-            this.setState({ buttonText: this.state.shortnerAddress});
-        } catch (err) {
-            this.setState({ buttonText: "Try Again", errMessage: "Please select Mainnet in your wallet" });
-            //this.showErrorModal();   
-        }
-    };
   
     async showShortner() {
         let address = this.state.dsaAddress.toString()
@@ -134,34 +139,72 @@ class App extends Component {
         // Setting DSA Instance
         await dsa.setInstance(existingDSAAddress[0].id);
         await this.createUserdata(dsa);
+        await this.dashboardupdate(dsa);   
+    }
+
+    async dashboardupdate(dsa){
         await this.getUserdata(dsa);
-        
+        await this.showInterestModal(dsa);
+        await this.getAssetsPresentIn(dsa);
     }
 
     async showInterestModal(dsa){
-        const com = await dsa.compound.getPosition("0x724A3c801ae0E84fbEA630D72f4675220429EA00");
-        const aav = await dsa.aave.getPosition("0x724A3c801ae0E84fbEA630D72f4675220429EA00");
-        const dd = await dsa.dydx.getPosition("0x724A3c801ae0E84fbEA630D72f4675220429EA00");
+        const com = await dsa.compound.getPosition(this.state.dsaAddress);
+        const aav = await dsa.aave.getPosition(this.state.dsaAddress);
+        const dd = await dsa.dydx.getPosition(this.state.dsaAddress);
         this.setState({
             interestRate: {
-                Dai: {
+                dai: {
                     compound: com["dai"].supplyYield,
                     aave: aav["dai"].supplyYield,
                     dydx: dd["dai"].supplyYield
                 },
-                Eth: {
+                eth: {
                     compound: com["eth"].supplyYield,
                     aave: aav["eth"].supplyYield,
                     dydx: dd["eth"].supplyYield
                 },
-                USDC: {
+                usdc: {
                     compound: com["usdc"].supplyYield,
                     aave: aav["usdc"].supplyYield,
                     dydx: dd["usdc"].supplyYield
                 }
             }
         });
-        console.log(this.state.interestRate);
+        var dai;
+        var eth;
+        var usdc;
+        
+        if(this.state.interestRate.dai.compound >= this.state.interestRate.dai.aave && this.state.interestRate.dai.compound >= this.state.interestRate.dai.dydx){
+            dai = "compound";
+        } else if(this.state.interestRate.dai.aave >= this.state.interestRate.dai.compound && this.state.interestRate.dai.aave >= this.state.interestRate.dai.dydx){
+            dai = "aave";
+        } else if(this.state.interestRate.dai.dydx >= this.state.interestRate.dai.aave && this.state.interestRate.dai.dydx >= this.state.interestRate.dai.compound){
+            dai = "dydx";
+        }
+
+        if(this.state.interestRate.eth.compound >= this.state.interestRate.eth.aave && this.state.interestRate.eth.compound >= this.state.interestRate.eth.dydx){
+            eth = "compound";
+        } else if(this.state.interestRate.eth.aave >= this.state.interestRate.eth.compound && this.state.interestRate.eth.aave >= this.state.interestRate.eth.dydx){
+            eth = "aave";
+        } else if(this.state.interestRate.eth.dydx >= this.state.interestRate.eth.aave && this.state.interestRate.eth.dydx >= this.state.interestRate.eth.compound){
+            eth = "dydx";
+        }
+
+        if(this.state.interestRate.usdc.compound >= this.state.interestRate.usdc.aave && this.state.interestRate.usdc.compound >= this.state.interestRate.usdc.dydx){
+            usdc = "compound";
+        } else if(this.state.interestRate.usdc.aave >= this.state.interestRate.usdc.compound && this.state.interestRate.usdc.aave >= this.state.interestRate.usdc.dydx){
+            usdc = "aave";
+        } else if(this.state.interestRate.usdc.dydx >= this.state.interestRate.usdc.aave && this.state.interestRate.usdc.dydx >= this.state.interestRate.usdc.compound){
+            usdc = "dydx";
+        }
+        this.setState({
+            protocolinterestmax:{
+                dai: dai,
+                eth: eth,
+                usdc: usdc
+            }
+        })
 
     }
 
@@ -179,59 +222,156 @@ class App extends Component {
         axios.get('http://localhost:1423/users/'+id)
             .then(res => {
                 this.setState({
-                    userAssets : {
-                        Dai: res.data.Dai,
-                        Eth: res.data.Eth,
-                        USDC: res.data.USDC
+                    principalAmount : {
+                        dai: res.data.Dai,
+                        eth: res.data.Eth,
+                        usdc: res.data.USDC
                     },
                     transaction: res.data.trans
                 })
             })
             .catch((error) => {console.log(error);})
+    };
+
+    async getAssetsPresentIn(dsa){
+        const com = await dsa.compound.getPosition(this.state.dsaAddress);
+        const aav = await dsa.aave.getPosition(this.state.dsaAddress);
+        const dd = await dsa.dydx.getPosition(this.state.dsaAddress);
+        let daiprotocol= "";
+        let daiamount = 0;
+        let ethprotocol = "";
+        let ethamount = 0;
+        let usdcprotocol = "";
+        let usdcamount = 0;
+
+        if(com["dai"].supply>=aav["dai"].supply && com["dai"].supply>=dd["dai"].supply){
+            daiprotocol = "compound";
+            daiamount = com["dai"].supply;
+        } else if (aav["dai"].supply>=com["dai"].supply && aav["dai"].supply>=dd["dai"].supply){
+            daiprotocol = "aave";
+            daiamount = aav["dai"].supply;
+        } else if (dd["dai"].supply>=aav["dai"].supply && dd["dai"].supply>=com["dai"].supply){
+            daiprotocol = "dydx";
+            daiamount = dd["dai"].supply;
+        }
+
+        if(com["eth"].supply>=aav["eth"].supply && com["eth"].supply>=dd["eth"].supply){
+            ethprotocol = "compound";
+            ethamount = com["eth"].supply;
+        } else if (aav["eth"].supply>=com["eth"].supply && aav["eth"].supply>=dd["eth"].supply){
+            ethprotocol = "aave";
+            ethamount = aav["eth"].supply;
+        } else if (dd["eth"].supply>=aav["eth"].supply && dd["eth"].supply>=com["eth"].supply){
+            ethprotocol = "dydx";
+            ethamount = dd["eth"].supply;
+        }
+
+        if(com["usdc"].supply>=aav["usdc"].supply && com["usdc"].supply>=dd["usdc"].supply){
+            usdcprotocol = "compound";
+            usdcamount = com["usdc"].supply;
+        } else if (aav["usdc"].supply>=com["usdc"].supply && aav["usdc"].supply>=dd["usdc"].supply){
+            usdcprotocol = "aave";
+            usdcamount = aav["usdc"].supply;
+        } else if (dd["usdc"].supply>=aav["usdc"].supply && dd["usdc"].supply>=com["usdc"].supply){
+            usdcprotocol = "dydx";
+            usdcamount = dd["usdc"].supply;
+        }
+        
+        this.setState({
+            protocolassetPresent: {
+                dai: daiprotocol,
+                eth: ethprotocol,
+                usdc: usdcprotocol
+            },
+            totalSupply : {
+                dai: daiamount,
+                eth: ethamount,
+                usdc: usdcamount,
+            },
+        })
+        
+    }
+
+    async updateUserData(dsa, amount, message ){
+        const id = this.state.dsa_id;
+        let daii;
+        let ethh;
+        let usdcc;
+        if(this.state.assetSelected === "dai"){
+            daii = this.state.principalAmount.dai + amount;
+            ethh = this.state.principalAmount.eth;
+            usdcc = this.state.principalAmount.usdc;
+        }else if (this.state.assetSelected === "eth"){
+            daii = this.state.principalAmount.dai;
+            ethh = this.state.principalAmount.eth + amount;
+            usdcc = this.state.principalAmount.usdc;
+        } else if (this.state.assetSelected === "usdc"){
+            daii = this.state.principalAmount.dai;
+            ethh = this.state.principalAmount.eth;
+            usdcc = this.state.principalAmount.usdc + amount;
+        }
+        const details = {
+            fromTo: message,
+            amount: Math.abs(amount),
+            type: this.state.assetSelected,
+            Dai: daii,
+            Eth: ethh,
+            USDC: usdcc
+        }
+
+        axios.post('http://localhost:1423/users/update/'+ id, details)
+            .then(res => {
+                console.log(res.data);
+                this.dashboardupdate(this.state.dsa)
+            });
     }
 
 
 
-    async withdrawAmount(dsa, amount){
-        const proto = this.state.protocol;
-        var spells = dsa.spells();
-        if(proto !== "None" || proto !== ""){
-            if(this.state.assetSelected === "dai"){
-                spells = await genericDSAwithdraw(
-                    spells,
-                    proto,
-                    dsa.tokens.info["dai"].address,
-                    this.state.amount,
-                    this.state.account  
-                );
-            }else if(this.state.assetSelected === "eth"){
-                spells = await genericDSAwithdraw(
-                    spells,
-                    proto,
-                    dsa.tokens.info["eth"].address,
-                    this.state.amount,
-                    this.state.account  
-                );
-            }else if(this.state.assetSelected === "usdc"){
-                spells = await genericDSAwithdraw(
-                    spells,
-                    proto,
-                    dsa.tokens.info["usdc"].address,
-                    this.state.amount,
-                    this.state.account  
-                );
-            }
-            const tx = await dsa.cast({spells: spells})
+    async deposit(amount){
+        try {
+            let spells = await this.state.dsa.Spell();
+            spells = await genericDSAdeposit(
+                spells,
+                this.state.protocolinterestmax[this.state.assetSelected],
+                this.state.dsa.tokens.info[this.state.assetSelected].address,
+                this.state.dsa.tokens.fromDecimal(amount, this.state.assetSelected)
+            );
+            const tx = await this.state.dsa.cast({spells: spells})
                 .catch((err) => {
                     throw new Error("Transaction is likely to fail, Check you spells once!")
                 });
-            if (tx) {
-                console.log("https://etherscan.io/tx/" + tx)
-                
-            }  
+            if (tx) { 
+                var message = "deposit in " + this.state.protocolinterestmax[this.state.assetSelected];
+                await this.updateUserData(this.state.dsa, amount, message )
+                //update details in state;
+            }
+        } catch(err) {
+            console.log(err.message)
+        }
+    }
 
-        }else{
-            console.log("You will have to deposit amount first!");
+    async withdraw(amount){
+        try {
+            let spells = await this.state.dsa.Spell();
+            spells = await genericDSAwithdraw(
+                spells,
+                this.state.protocolassetPresent[this.state.assetSelected],
+                this.state.dsa.tokens.info[this.state.assetSelected].address,
+                this.state.dsa.tokens.fromDecimal(amount, this.state.assetSelected),
+                this.state.account
+            );
+            const tx = await this.state.dsa.cast({spells: spells})
+                .catch((err) => {
+                    throw new Error("Transaction is likely to fail, Check you spells once!")
+                });
+            if (tx) { 
+                var message = "withdraw from " + this.state.protocolinterestmax[this.state.assetSelected];
+                await this.updateUserData(this.state.dsa, -1 * amount, message )
+                //update details in state;
+            }
+        } catch(err) {
+            console.log(err.message);
         }
     }
 
@@ -282,10 +422,10 @@ class App extends Component {
                 </div>
 
                 <div id="mySidenav" className="sidenav shadow">
-                    <a href="#">DashBoard</a> <br></br>
-                    <a href="#">About us</a><br></br>
-                   
+                    <p>DashBoard</p> <br></br>
+                    <p>About us</p><br></br>
                 </div>
+
                 <div id = "maincontent">
                     <div id = "summary1" className="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-12 layout-spacing shadow">
                         <div className="widget widget-card-four">
@@ -332,7 +472,7 @@ class App extends Component {
                             <div className="widget-content">
                                 <div className="w-content">
                                     <div className="w-info">
-                                        <p className="value" id="AvgRate">0</p> 
+                                        <p className="value" id="AvgRate"></p> 
                                         <p className="value" id="">Percentage</p><br></br>
                                         <h6 className="cardhead">% Earnings</h6>
                                     </div>
@@ -349,7 +489,7 @@ class App extends Component {
                         className="select-Asset"
                         onChange={this.handleAssetChange}
                     >
-                        <option>ETH</option>
+                        <option>{ETH}</option>
                         <option>DAI</option>
                         <option>USDC</option>
                     </select>

@@ -12,9 +12,9 @@ var transaction = new Schema({
 
 var userSchema = new Schema({
     id: { type: Number, required: true, unique: true },
-    protocol_dai: {type: String, default: "None"},
-    protocol_eth: {type: String, default: "None"},
-    protocol_usdc: {type: String, default: "None"},
+    // protocol_dai: {type: String, default: "None"},
+    // protocol_eth: {type: String, default: "None"},
+    // protocol_usdc: {type: String, default: "None"},
     Dai: { type: Number, default: 0 },
     Eth: { type: Number, default: 0 },
     USDC: { type: Number, default: 0 },

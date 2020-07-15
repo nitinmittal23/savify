@@ -33,13 +33,13 @@ router.route('/:id').delete((req, res) => {
 router.route('/update/:id').post((req, res) => {
     User.findOne({id: req.params.id})
         .then(user => {
-            user.protocol = req.body.protocol;
+            //user.protocol = req.body.protocol;
             user.Dai = req.body.Dai;
             user.Eth = req.body.Eth;
             user.USDC = req.body.USDC;
-            user.protocol_dai =Request.body.protocol_dai
-            user.protocol_eth =Request.body.protocol_eth
-            user.protocol_usdc =Request.body.protocol_usdc
+            // user.protocol_dai =Request.body.protocol_dai
+            // user.protocol_eth =Request.body.protocol_eth
+            // user.protocol_usdc =Request.body.protocol_usdc
             user.trans.push({fromTo: req.body.fromTo, amount: req.body.amount, type: req.body.type})
             
             user.save()
