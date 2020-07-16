@@ -4,7 +4,13 @@ import Authereum from "authereum";
 import Modal from "react-bootstrap/Modal";
 import Web3Modal from "web3modal";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./savify.css";
+//import "./savify.css";
+import "./smart-bots-frontend/assets/css/loader.css";
+import "./smart-bots-frontend/assets/css/plugins.css";
+import "./smart-bots-frontend/bootstrap/css/bootstrap.min.css";
+import "./smart-bots-frontend/assets/css/structure.css";
+import "./smart-bots-frontend/plugins/apex/apexcharts.css";
+import "./smart-bots-frontend/assets/css/widgets/modules-widgets.css";
 import savifycopy from './images/savify copy.png';
 import axios from 'axios';
 import dashboard from "./images/download.png";
@@ -28,6 +34,7 @@ class App extends Component {
         this.onChangeprotocol = this.onChangeprotocol.bind(this);
         this.onChangetransaction = this.onChangetransaction.bind(this);
         this.onChangeselectedAsset = this.onChangeselectedAsset.bind(this);
+        this.onChangeToggleSelectedAsset = this.onChangeToggleSelectedAsset.bind(this);
         this.onChangeAmount = this.onChangeAmount.bind(this);
         this.createAccount = this.createAccount.bind(this);
         this.deposit = this.deposit.bind(this);
@@ -77,6 +84,7 @@ class App extends Component {
             transaction: [{}],
             dsa_id: 0,
             assetSelected: "eth",
+            toggleassetSelected: "eth",
             amount: 0,
             
         };
@@ -349,8 +357,6 @@ class App extends Component {
             });
     }
 
-
-
     async deposit(amount){
         try {
             let spells = await this.state.dsa.Spell();
@@ -398,6 +404,37 @@ class App extends Component {
         }
     }
 
+    async toggle(){
+        var from_protocol = this.state.protocolassetPresent[this.state.toggleassetSelected];
+        var to_protocol = this.state.protocolinterestmax[this.state.toggleassetSelected];
+
+        if(from_protocol===to_protocol){
+            console.log("already Optimised")
+        } else {
+            try {
+                let spells = await this.state.dsa.Spell();
+                spells = await genericDSAtoggle(
+                    spells,
+                    from_protocol,
+                    to_protocol,
+                    this.state.dsa.tokens.info[this.state.toggleassetSelected].address,
+                    this.state.dsa.tokens.fromDecimal(this.state.totalSupply[this.state.toggleassetSelected] , this.state.assetSelected)
+                );
+                const tx = await this.state.dsa.cast({spells: spells})
+                    .catch((err) => {
+                        throw new Error("Transaction is likely to fail, Check you spells once!")
+                    });
+                if (tx) { 
+                    var message = from_protocol +  " to " + to_protocol;
+                    //await this.updateUserData(this.state.dsa, amount, message )
+                }
+            } catch(err) {
+                console.log(err.message)
+            }
+        }
+        
+    }
+
     onChangeprotocol(e) {
         this.setState({
             protocol: e.target.value
@@ -412,6 +449,11 @@ class App extends Component {
     onChangeselectedAsset(e) {
         this.setState({
             assetSelected: e.target.value
+        })
+    }
+    onChangeToggleSelectedAsset (e) {
+        this.setState({
+            toggleassetSelected: e.target.value
         })
     }
     onChangeAmount(e) {
@@ -433,7 +475,7 @@ class App extends Component {
     render() {
         return (
             <div>
-                <div id = "navbar" className="header-container fixed-top shadow p-0">
+                {/* <div id = "navbar" className="header-container fixed-top shadow p-0">
                     <div> 
                         <img src={savifycopy} href="/" alt="SaviFi"  align="left" className="savify-image"/>
                     </div>
@@ -463,7 +505,7 @@ class App extends Component {
                             </div>
                         </div>           
                     </div>
-                    <div id = "summary2" className="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-4 layout-spacing shadow">
+                    <div id = "summary2" className="col-xl-2 col-lg-2 col-md-3 col-sm-2 col-12 layout-spacing shadow">
                         <div className="widget widget-card-four">
                             <div className="widget-content">
                                 <div className="w-content">
@@ -477,7 +519,7 @@ class App extends Component {
                         </div>    
                     </div>
 
-                    <div id = "summary3" className="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-4 layout-spacing shadow inline">
+                    <div id = "summary3" className="col-xl-2 col-lg-2 col-md-3 col-sm-2 col-12 layout-spacing shadow inline">
                         <div className="widget widget-card-four">
                             <div className="widget-content">
                                 <div className="w-content">
@@ -490,12 +532,12 @@ class App extends Component {
                             </div>
                         </div>           
                     </div>
-                    <div id = "summary4" className="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-4 layout-spacing shadow">
+                    <div id = "summary4" className="col-xl-2 col-lg-2 col-md-3 col-sm-2 col-12 layout-spacing shadow">
                         <div className="widget widget-card-four">
                             <div className="widget-content">
                                 <div className="w-content">
                                     <div className="w-info">
-                                        <p className="value" id="AvgRate"></p> 
+                                        <p className="value" id="AvgRate">0</p> 
                                         <p className="value" id="">Percentage</p><br></br>
                                         <h6 className="cardhead">% Earnings</h6>
                                     </div>
@@ -518,10 +560,168 @@ class App extends Component {
                     </select>
                 </div> */}
                 
-                
-                
-                
-                
+                <div className="header-container fixed-top">
+                    <div> 
+                        <img src={savifycopy} alt="SaviFi"  style={{
+                                                                    paddingLeft: "25px",
+                                                                    paddingRight: "25px",
+                                                                    width: "210px",
+                                                                    height: "80px",
+                                                                    backgroundColor: "azure"
+                            }} ALIGN="left" />
+                    </div>
+                    
+                    <header className="header navbar navbar-expand-sm">
+                        <a className="sidebarCollapse" data-placement="bottom"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="feather feather-list"></svg></a>
+                            <div className="media">
+                                <div className="user-img">
+                                    <div className="avatar avatar-xl">
+                                        <span className="avatar-title rounded-circle"></span>
+                                    </div>
+                                </div>
+                                <div className="media-body">
+                                    <div className="">
+                                        <h5 className="usr-name" id="accountValue">No Account Created</h5>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                    </header>
+                </div>
+
+                <div className="main-container" id="container">
+                    <div className="overlay"></div>
+                    <div className="cs-overlay"></div>
+                    <div className="search-overlay"></div>
+
+                    <div className="sidebar-wrapper sidebar-theme">
+                        <nav id="compactSidebar">
+                            <ul className="menu-categories">
+                                <li className="menu active">
+                                    <a href="#dashboard" data-active="true" className="menu-toggle">
+                                        <div className="base-menu">
+                                            <div className="base-icons">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                            </div>
+                                            <span>Dashboard</span>
+                                        </div>
+                                    </a>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="feather feather-chevron-left"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                                </li>
+
+                                <li className="menu">
+                                    <a href="https://drive.google.com/file/d/1VeQa-g64T1_vmTa8CJuYMTsgeGXC26ND/view" data-active="false" className="menu-toggle">
+                                        <div className="base-menu">
+                                            <div className="base-icons">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="feather feather-cpu"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
+                                            </div>
+                                            <span>White Paper</span>
+                                        </div>
+                                    </a>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="feather feather-chevron-left"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                                </li>
+                            </ul>
+                        </nav>
+
+                        <div id="compact_submenuSidebar" className="submenu-sidebar">
+
+                            <div className="submenu" id="dashboard">
+                                <ul className="submenu-list" data-parent-element="#dashboard"> 
+                                    <li className="active">
+                                        <a href="index.html"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="feather feather-pie-chart"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg> Analytics </a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div className="submenu" id="about us">
+                                
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div id="content" className="main-content">
+                        <div className="layout-px-spacing">
+                            <div className="page-header">
+                                <div className="page-title">
+                                    <h3>Dashboard</h3>
+                                </div>
+                            </div>
+                            <div className="row sales layout-top-spacing">
+                                <div className="col-xl-3 col-lg-2 col-md-2 col-sm-2 col-4 layout-spacing">
+                                    <div className="widget widget-card-four">
+                                        <div className="widget-content">
+                                            <div className="w-content">
+                                                <div className="w-info">
+                                                    <p className="value" id="AvgRate">0</p> 
+                                                    <p className="value" id="">Percentage</p>
+                                                    <h6 className="">% Earnings</h6>
+                                                </div>
+                                                <div className=""></div>
+                                                </div>
+                                            <div className="progress">
+                                                <div className="progress-bar bg-gradient-secondary" role="progressbar" style={{width: "57%"}} aria-valuenow="57" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </div>           
+                                </div>
+                                <div className="col-xl-3 col-lg-2 col-md-2 col-sm-2 col-4 layout-spacing">
+                                    <div className="widget widget-card-four">
+                                        <div className="widget-content">
+                                            <div className="w-content">
+                                                <div className="w-info">
+                                                    <p className="value" id ="intEarned">0</p> 
+                                                    <p className="value" id="">DAI</p>
+                                                    <h6 className="">Interest Earned</h6>
+                                                </div>
+                                                <div className=""></div>
+                                                </div>
+                                            <div className="progress">
+                                                <div className="progress-bar bg-gradient-secondary" role="progressbar" style={{width: "57%"}} aria-valuenow="57" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-xl-3 col-lg-2 col-md-2 col-sm-2 col-4 layout-spacing">
+                                    <div className="widget widget-card-four">
+                                        <div className="widget-content">
+                                            <div className="w-content">
+                                                <div className="w-info">
+                                                    <p className="value" id = "PAmount">0</p> 
+                                                    <p className="value" id="">DAI</p>
+                                                    <h6 className="">Principal Amount</h6>
+                                                </div>
+                                            <div className=""></div>          
+                                            </div>
+                                            <div className="progress">
+                                                <div className="progress-bar bg-gradient-secondary" role="progressbar" style={{width: "57%"}} aria-valuenow="57" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br></br>
+                                </div>
+                                <div className="col-xl-3 col-lg-2 col-md-2 col-sm-2 col-4 layout-spacing">
+                                    <div className="widget widget-card-four">
+                                        <div className="widget-content">
+                                            <div className="w-content">
+                                                <div className="w-info">
+                                                    <p className="value" id="totalSupply">0</p>
+                                                    <p className="value" id="">DAI</p>
+                                                    <h6 className="">A/C Summary</h6>
+                                                </div> 
+                                            </div>
+                                            <div className="progress">
+                                                <div className="progress-bar bg-gradient-secondary" role="progressbar" style={{width: "57%"}} aria-valuenow="57" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </div>    
+                                </div>
+                                
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }
