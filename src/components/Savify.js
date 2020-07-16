@@ -29,8 +29,12 @@ class App extends Component {
         this.onChangetransaction = this.onChangetransaction.bind(this);
         this.onChangeselectedAsset = this.onChangeselectedAsset.bind(this);
         this.onChangeAmount = this.onChangeAmount.bind(this);
+        this.createAccount = this.createAccount.bind(this);
+        this.deposit = this.deposit.bind(this);
+        this.withdraw = this.withdraw.bind(this);
         this.state = {
             buttonText: "Connect",
+            buttonDisabled: true,
             shortnerAddress: "",
             errMessage: "",
             interestRate: {
@@ -76,7 +80,7 @@ class App extends Component {
             amount: 0,
             
         };
-        //this.login();
+        this.login();
       
     }
   
@@ -88,8 +92,6 @@ class App extends Component {
         try {
             await this.loadWeb3();
             await this.loadBlockchainData();
-            await this.showShortner()
-            this.setState({ buttonText: this.state.shortnerAddress});
         } catch (err) {
             this.setState({ buttonText: "Try Again", errMessage: "Please select Mainnet in your wallet" });
             //this.showErrorModal();   
@@ -129,17 +131,38 @@ class App extends Component {
         // Getting Your DSA Address
         var existingDSAAddress = await dsa.getAccounts(this.state.account);
         if (existingDSAAddress.length === 0) {
-            var newDsaAddress = await dsa.build({
-                gasPrice: this.state.web3.utils.toWei("27", "gwei"),
+            // var newDsaAddress = await dsa.build({
+            //     gasPrice: this.state.web3.utils.toWei("27", "gwei"),
+            // });
+            this.setState({
+                buttonDisabled: false,
+                buttonText: "Create Account"
+            })
+        }
+        else{
+            existingDSAAddress = await dsa.getAccounts(this.state.account);
+            this.setState({ 
+                dsaAddress: existingDSAAddress[0].address, 
+                dsa_id: existingDSAAddress[0].id,
+                buttonDisabled: true
             });
+            // Setting DSA Instance
+            await dsa.setInstance(existingDSAAddress[0].id);
+            await this.createUserdata(dsa);
+            await this.dashboardupdate(dsa); 
+            await this.showShortner()
+            this.setState({ buttonText: this.state.shortnerAddress});
         }
         // change to this.state.account does this requires address as string?
-        existingDSAAddress = await dsa.getAccounts(this.state.account);
-        this.setState({ dsaAddress: existingDSAAddress[0].address, dsa_id: existingDSAAddress[0].id });
-        // Setting DSA Instance
-        await dsa.setInstance(existingDSAAddress[0].id);
-        await this.createUserdata(dsa);
-        await this.dashboardupdate(dsa);   
+          
+    }
+    async createAccount(){
+        var newDsaAddress = await this.state.dsa.build({
+            gasPrice: this.state.web3.utils.toWei("27", "gwei"),
+        });
+        await this.loadBlockchainData();
+        await this.showShortner()
+        this.setState({ buttonText: this.state.shortnerAddress});
     }
 
     async dashboardupdate(dsa){
@@ -366,7 +389,7 @@ class App extends Component {
                     throw new Error("Transaction is likely to fail, Check you spells once!")
                 });
             if (tx) { 
-                var message = "withdraw from " + this.state.protocolinterestmax[this.state.assetSelected];
+                var message = "withdraw from " + this.state.protocolassetPresent[this.state.assetSelected];
                 await this.updateUserData(this.state.dsa, -1 * amount, message )
                 //update details in state;
             }
@@ -415,7 +438,7 @@ class App extends Component {
                         <img src={savifycopy} href="/" alt="SaviFi"  align="left" className="savify-image"/>
                     </div>
                     <div  id = "test" className="header navbar navbar-expand-sm flex-md-nowrap">
-                        <button onClick={this.login} align="right">
+                        <button onClick={this.createAccount} align="right" disabled={this.state.buttonDisabled}>
                             {this.state.buttonText}{" "}
                         </button>
                     </div>    
