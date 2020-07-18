@@ -323,7 +323,7 @@ class App extends Component {
         
     }
 
-    async updateUserData(dsa, amount, message ){
+    async updateUserData(amount, message){
         const id = this.state.dsa_id;
         let daii;
         let ethh;
@@ -357,6 +357,26 @@ class App extends Component {
             });
     }
 
+    async updateToggleTransaction(message){
+        const id = this.state.dsa_id;
+        let daii = this.state.principalAmount.dai;
+        let ethh = this.state.principalAmount.eth;
+        let usdcc = this.state.principalAmount.usdc;
+        const details = {
+            fromTo: message,
+            amount: this.state.totalSupply[this.state.toggleassetSelected],
+            type: this.state.toggleassetSelected,
+            Dai: daii,
+            Eth: ethh,
+            USDC: usdcc
+        }
+        axios.post('http://localhost:1423/users/update/'+ id, details)
+            .then(res => {
+                console.log(res.data);
+                this.dashboardupdate(this.state.dsa)
+            });
+    }
+
     async deposit(amount){
         try {
             let spells = await this.state.dsa.Spell();
@@ -372,7 +392,7 @@ class App extends Component {
                 });
             if (tx) { 
                 var message = "deposit in " + this.state.protocolinterestmax[this.state.assetSelected];
-                await this.updateUserData(this.state.dsa, amount, message )
+                await this.updateUserData(amount, message )
                 //update details in state;
             }
         } catch(err) {
@@ -396,7 +416,7 @@ class App extends Component {
                 });
             if (tx) { 
                 var message = "withdraw from " + this.state.protocolassetPresent[this.state.assetSelected];
-                await this.updateUserData(this.state.dsa, -1 * amount, message )
+                await this.updateUserData(-1 * amount, message )
                 //update details in state;
             }
         } catch(err) {
@@ -426,7 +446,7 @@ class App extends Component {
                     });
                 if (tx) { 
                     var message = from_protocol +  " to " + to_protocol;
-                    //await this.updateUserData(this.state.dsa, amount, message )
+                    await this.updateToggleTransaction(message)
                 }
             } catch(err) {
                 console.log(err.message)
@@ -486,66 +506,7 @@ class App extends Component {
                     </div>    
                 </div>
 
-                <div id="mySidenav" className="sidenav shadow">
-                    <p>DashBoard</p> <br></br>
-                    <p>About us</p><br></br>
-                </div>
-
-                <div id = "maincontent">
-                    <div id = "summary1" className="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-12 layout-spacing shadow">
-                        <div className="widget widget-card-four">
-                            <div className="widget-content">
-                                <div className="w-content">
-                                    <div className="w-info">
-                                        <p className="value" id="AvgRate">0</p> 
-                                        <p className="value" id="">USDC</p><br></br>
-                                        <h6 className="cardhead">A/C Summary</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>           
-                    </div>
-                    <div id = "summary2" className="col-xl-2 col-lg-2 col-md-3 col-sm-2 col-12 layout-spacing shadow">
-                        <div className="widget widget-card-four">
-                            <div className="widget-content">
-                                <div className="w-content">
-                                    <div className="w-info">
-                                        <p className="value" id="AvgRate">0</p> 
-                                        <p className="value" id="">Percentage</p><br></br>
-                                        <h6 className="cardhead">Principal Amount</h6>
-                                    </div>
-                                </div>
-                            </div>   
-                        </div>    
-                    </div>
-
-                    <div id = "summary3" className="col-xl-2 col-lg-2 col-md-3 col-sm-2 col-12 layout-spacing shadow inline">
-                        <div className="widget widget-card-four">
-                            <div className="widget-content">
-                                <div className="w-content">
-                                    <div className="w-info">
-                                        <p className="value" id="AvgRate">0</p> 
-                                        <p className="value" id="">Percentage</p><br></br>
-                                        <h6 className="cardhead">Interest Earned</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>           
-                    </div>
-                    <div id = "summary4" className="col-xl-2 col-lg-2 col-md-3 col-sm-2 col-12 layout-spacing shadow">
-                        <div className="widget widget-card-four">
-                            <div className="widget-content">
-                                <div className="w-content">
-                                    <div className="w-info">
-                                        <p className="value" id="AvgRate">0</p> 
-                                        <p className="value" id="">Percentage</p><br></br>
-                                        <h6 className="cardhead">% Earnings</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>           
-                    </div>
-                </div>
+                
                 {/* <div id = "whole">
                     <div>
                         <h1>{this.state.interestRate.Dai.compound}</h1>
@@ -716,7 +677,7 @@ class App extends Component {
                                         </div>
                                     </div>    
                                 </div>
-                                
+
                             </div>
 
                         </div>
