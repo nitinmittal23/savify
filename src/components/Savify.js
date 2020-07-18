@@ -4,7 +4,7 @@ import Authereum from "authereum";
 import Modal from "react-bootstrap/Modal";
 import Web3Modal from "web3modal";
 import "bootstrap/dist/css/bootstrap.min.css";
-//import "./savify.css";
+import "./savify.css";
 import "./smart-bots-frontend/assets/css/loader.css";
 import "./smart-bots-frontend/assets/css/plugins.css";
 import "./smart-bots-frontend/bootstrap/css/bootstrap.min.css";
@@ -12,6 +12,17 @@ import "./smart-bots-frontend/assets/css/structure.css";
 import "./smart-bots-frontend/plugins/apex/apexcharts.css";
 import "./smart-bots-frontend/assets/css/widgets/modules-widgets.css";
 import savifycopy from './images/savify copy.png';
+import compoundf from './images/compoundf.png';
+import aave from './images/aave.jpg';
+import dxdy from './images/dxdy.PNG';
+import curve from './images/curve.png';
+import maker from './images/maker.jpg';
+import dai from './images/dai.PNG';
+import eth from './images/eth.png';
+import usdc from './images/usdc.PNG';
+import btc from './images/btc.PNG';
+import usdt from './images/usdt.PNG';
+import zrx from './images/zrx.PNG';
 import axios from 'axios';
 import dashboard from "./images/download.png";
 
@@ -1073,7 +1084,7 @@ class App extends Component {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>    
         );
     }
 }
