@@ -334,7 +334,7 @@ class App extends Component {
         
     }
 
-    async updateUserData(dsa, amount, message ){
+    async updateUserData(amount, message){
         const id = this.state.dsa_id;
         let daii;
         let ethh;
@@ -368,6 +368,26 @@ class App extends Component {
             });
     }
 
+    async updateToggleTransaction(message){
+        const id = this.state.dsa_id;
+        let daii = this.state.principalAmount.dai;
+        let ethh = this.state.principalAmount.eth;
+        let usdcc = this.state.principalAmount.usdc;
+        const details = {
+            fromTo: message,
+            amount: this.state.totalSupply[this.state.toggleassetSelected],
+            type: this.state.toggleassetSelected,
+            Dai: daii,
+            Eth: ethh,
+            USDC: usdcc
+        }
+        axios.post('http://localhost:1423/users/update/'+ id, details)
+            .then(res => {
+                console.log(res.data);
+                this.dashboardupdate(this.state.dsa)
+            });
+    }
+
     async deposit(amount){
         try {
             let spells = await this.state.dsa.Spell();
@@ -383,7 +403,7 @@ class App extends Component {
                 });
             if (tx) { 
                 var message = "deposit in " + this.state.protocolinterestmax[this.state.assetSelected];
-                await this.updateUserData(this.state.dsa, amount, message )
+                await this.updateUserData(amount, message )
                 //update details in state;
             }
         } catch(err) {
@@ -407,7 +427,7 @@ class App extends Component {
                 });
             if (tx) { 
                 var message = "withdraw from " + this.state.protocolassetPresent[this.state.assetSelected];
-                await this.updateUserData(this.state.dsa, -1 * amount, message )
+                await this.updateUserData(-1 * amount, message )
                 //update details in state;
             }
         } catch(err) {
@@ -437,7 +457,7 @@ class App extends Component {
                     });
                 if (tx) { 
                     var message = from_protocol +  " to " + to_protocol;
-                    //await this.updateUserData(this.state.dsa, amount, message )
+                    await this.updateToggleTransaction(message)
                 }
             } catch(err) {
                 console.log(err.message)
@@ -497,66 +517,7 @@ class App extends Component {
                     </div>    
                 </div>
 
-                <div id="mySidenav" className="sidenav shadow">
-                    <p>DashBoard</p> <br></br>
-                    <p>About us</p><br></br>
-                </div>
 
-                <div id = "maincontent">
-                    <div id = "summary1" className="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-12 layout-spacing shadow">
-                        <div className="widget widget-card-four">
-                            <div className="widget-content">
-                                <div className="w-content">
-                                    <div className="w-info">
-                                        <p className="value" id="AvgRate">0</p> 
-                                        <p className="value" id="">USDC</p><br></br>
-                                        <h6 className="cardhead">A/C Summary</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>           
-                    </div>
-                    <div id = "summary2" className="col-xl-2 col-lg-2 col-md-3 col-sm-2 col-12 layout-spacing shadow">
-                        <div className="widget widget-card-four">
-                            <div className="widget-content">
-                                <div className="w-content">
-                                    <div className="w-info">
-                                        <p className="value" id="AvgRate">0</p> 
-                                        <p className="value" id="">Percentage</p><br></br>
-                                        <h6 className="cardhead">Principal Amount</h6>
-                                    </div>
-                                </div>
-                            </div>   
-                        </div>    
-                    </div>
-
-                    <div id = "summary3" className="col-xl-2 col-lg-2 col-md-3 col-sm-2 col-12 layout-spacing shadow inline">
-                        <div className="widget widget-card-four">
-                            <div className="widget-content">
-                                <div className="w-content">
-                                    <div className="w-info">
-                                        <p className="value" id="AvgRate">0</p> 
-                                        <p className="value" id="">Percentage</p><br></br>
-                                        <h6 className="cardhead">Interest Earned</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>           
-                    </div>
-                    <div id = "summary4" className="col-xl-2 col-lg-2 col-md-3 col-sm-2 col-12 layout-spacing shadow">
-                        <div className="widget widget-card-four">
-                            <div className="widget-content">
-                                <div className="w-content">
-                                    <div className="w-info">
-                                        <p className="value" id="AvgRate">0</p> 
-                                        <p className="value" id="">Percentage</p><br></br>
-                                        <h6 className="cardhead">% Earnings</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>           
-                    </div>
-                </div>
                 {/* <div id = "whole">
                     <div>
                         <h1>{this.state.interestRate.Dai.compound}</h1>
@@ -727,330 +688,273 @@ class App extends Component {
                                         </div>
                                     </div>    
                                 </div>
-                                
+
+                                 
                                 <div className="col-xl-3 col-lg-2 col-md-2 col-sm-2 col-4 layout-spacing">
-                        <div className="widget widget-activity-three">
-                            <div className="widget-heading">
-                                <h5 className="">Investment Summary </h5>
-                            </div>
-                            <div style={{overflowY: "scroll", 
-                                          height:"450px" }} 
-                            dir="ltr">
-                            <div className="widget-content">
-                                <div className="vistorsBrowser">
-                                    <div className="browser-list">
-                                        <div className="w-icon">
-                                            <a href="javascript:void(0);"><img src={compoundf} className="flag-width" alt="compoundf" style= {{ width:"40px" }} /></a>
-                                            
+                                    <div className="widget widget-activity-three">
+                                        <div className="widget-heading">
+                                            <h5 className="">Investment Summary </h5>
                                         </div>
-                                        <div className="w-browser-details">
-                                            <div className="w-browser-info">
-                                                <h6>Compound</h6>
-                                                <p className="browser-count" id = "cpercent">0%</p>
-                                            </div>
-                                            <div className="w-browser-stats">
-                                                <div className="progress" dir="rtl">
-                                                    <div className="progress-bar bg-gradient-primary" role="progressbar" style={{width: "45%"}} aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div style={{overflowY: "scroll", 
+                                            height:"450px" }} 
+                                            dir="ltr">
+                                        <div className="widget-content">
+                                            <div className="vistorsBrowser">
+                                                <div className="browser-list">
+                                                    <div className="w-icon">
+                                                        <a href="javascript:void(0);"><img src={compoundf} className="flag-width" alt="compoundf" style= {{ width:"40px" }} /></a>
+                                                    </div>
+                                                    <div className="w-browser-details">
+                                                        <div className="w-browser-info">
+                                                            <h6>Compound</h6>
+                                                            <p className="browser-count" id = "cpercent">0%</p>
+                                                        </div>
+                                                        <div className="w-browser-stats">
+                                                            <div className="progress" dir="rtl">
+                                                                <div className="progress-bar bg-gradient-primary" role="progressbar" style={{width: "45%"}} aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="browser-list">
+                                                    <div className="w-icon">
+                                                        <a  href="javascript:void(0);"><img src={aave} className="flag-width" alt="aave" style= {{width:"40px"}}/></a>
+                                                    </div>
+                                                    <div className="w-browser-details">
+                                                        
+                                                        <div className="w-browser-info">
+                                                            <h6>Aave</h6>
+                                                            <p className="browser-count" id = "mpercent">0%</p>
+                                                        </div>
+
+                                                        <div className="w-browser-stats">
+                                                            <div className="progress" dir="rtl">
+                                                                <div className="progress-bar bg-gradient-warning" role="progressbar" style={{width: "45%"}} aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="browser-list">
+                                                    <div className="w-icon">
+                                                        <a  href="javascript:void(0);"><img src={dxdy} className="flag-width" alt="dxdy" style= {{width:"40px"}}/></a>
+                                                    </div>
+                                                    <div className="w-browser-details">
+                                                        
+                                                        <div className="w-browser-info">
+                                                            <h6>dydx</h6>
+                                                            <p className="browser-count" id = "mpercent">0%</p>
+                                                        </div>
+
+                                                        <div className="w-browser-stats">
+                                                            <div className="progress" dir="rtl">
+                                                                <div className="progress-bar bg-gradient-dark" role="progressbar" style={{width: "45%"}} aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="browser-list">
+                                                    <div className="w-icon">
+                                                        <a data-img-value="de" href="javascript:void(0);"><img src={curve} className="flag-width" alt="curve" style=  {{width:"40px"}}/></a>
+                                                    </div>
+                                                    <div className="w-browser-details">
+                                                        
+                                                        <div className="w-browser-info">
+                                                            <h6>Curve</h6>
+                                                            <p className="browser-count" id = "mpercent">0%</p>
+                                                        </div>
+
+                                                        <div className="w-browser-stats">
+                                                            <div className="progress" dir="rtl">
+                                                                <div className="progress-bar bg-gradient-success" role="progressbar" style={{width: "45%"}} aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="browser-list">
+                                                    <div className="w-icon">
+                                                        <a  href="javascript:void(0);"><img src={maker} className="flag-width" alt="maker" style= {{ width:"40px" }} /></a>
+                                                    </div>
+                                                    <div className="w-browser-details">  
+                                                        <div className="w-browser-info">
+                                                            <h6>Maker Dao</h6>
+                                                            <p className="browser-count">0%</p>
+                                                        </div>
+                                                        <div className="w-browser-stats">
+                                                            <div className="progress" dir="rtl">
+                                                                <div className="progress-bar bg-gradient-danger" role="progressbar" style={{width: "45%"}} aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" ></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div className="browser-list">
-                                        <div className="w-icon">
-                                            <a  href="javascript:void(0);"><img src={aave} className="flag-width" alt="aave" style= {{width:"40px"}}/></a>
-                                        </div>
-                                        <div className="w-browser-details">
-                                            
-                                            <div className="w-browser-info">
-                                                <h6>Aave</h6>
-                                                <p className="browser-count" id = "mpercent">0%</p>
-                                            </div>
-
-                                            <div className="w-browser-stats">
-                                                <div className="progress" dir="rtl">
-                                                    <div className="progress-bar bg-gradient-warning" role="progressbar" style={{width: "45%"}} aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="browser-list">
-                                        <div className="w-icon">
-                                            <a  href="javascript:void(0);"><img src={dxdy} className="flag-width" alt="dxdy" style= {{width:"40px"}}/></a>
-                                        </div>
-                                        <div className="w-browser-details">
-                                            
-                                            <div className="w-browser-info">
-                                                <h6>dydx</h6>
-                                                <p className="browser-count" id = "mpercent">0%</p>
-                                            </div>
-
-                                            <div className="w-browser-stats">
-                                                <div className="progress" dir="rtl">
-                                                    <div className="progress-bar bg-gradient-dark" role="progressbar" style={{width: "45%"}} aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="browser-list">
-                                        <div className="w-icon">
-                                            <a data-img-value="de" href="javascript:void(0);"><img src={curve} className="flag-width" alt="curve" style=  {{width:"40px"}}/></a>
-                                        </div>
-                                        <div className="w-browser-details">
-                                            
-                                            <div className="w-browser-info">
-                                                <h6>Curve</h6>
-                                                <p className="browser-count" id = "mpercent">0%</p>
-                                            </div>
-
-                                            <div className="w-browser-stats">
-                                                <div className="progress" dir="rtl">
-                                                    <div className="progress-bar bg-gradient-success" role="progressbar" style={{width: "45%"}} aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="browser-list">
-                                        <div className="w-icon">
-                                            <a  href="javascript:void(0);"><img src={maker} className="flag-width" alt="maker" style= {{ width:"40px" }} /></a>
-                                        </div>
-                                        <div className="w-browser-details">
-                                            
-                                            <div className="w-browser-info">
-                                                <h6>Maker Dao</h6>
-                                                <p className="browser-count">0%</p>
-                                            </div>
-
-                                            <div className="w-browser-stats">
-                                                <div className="progress" dir="rtl">
-                                                    <div className="progress-bar bg-gradient-danger" role="progressbar" style={{width: "45%"}} aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" ></div>
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-                                    
                                 </div>
-                            </div>
-                            </div>
-                        </div>
                     </div>
                      
-                    <div className="col-xl-6 col-lg-6 col-md-2 col-sm-2 col-4 layout-spacing">
-                            <div className="widget widget-activity-four">
-                                    
-                    <div className="layout-px-spacing">
-                        <html>
-                           <head>
-                           <meta name="viewport" content="width=device-width, initial-scale=1" />
-                        
-
-                   
-                           </head>
-                           <body>
-                            <div className= "panel-body text-center">
-                                <button className="button" id="withdraw">Withdraw</button>
-                                <button className="button" id="deposit">Deposit</button>
-                                
-                        </div>
-                        <br></br>
-                            <div className="panel-body text-center" >
-                                   
-                               
-                           <form action="/action_page.php" method="get">
-                            <input list="hosting-plan" type="text"  id="amount" placeholder="Deposit/Withdraw Amount" style={{height:"40px", width:"450px"}} />
-                            <datalist id="hosting-plan" >
-                              <option value="Dai"></option>
-                              <option value="Eth"></option>
-                              <option value="USDC"></option>
-                              <option value="USDT"></option>
-                            </datalist>
-                            
-                          </form>
-                         
-                             <br></br>     
-                                    <button className="button" id="optimize">Optimize</button>
-                                    </div>
-                                    <br></br>
-                                  
-                            
-                            
-
-                                <div className=" col-xl-12 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing " >
-        
-                                        <div className="widget widget-table-one" >
-                                                <div className= "widget-heading ">
-                                               <h5 className="">Token Summary</h5>
+                                <div className="col-xl-6 col-lg-6 col-md-2 col-sm-2 col-4 layout-spacing">
+                                    <div className="widget widget-activity-four">
+                                        <div className="layout-px-spacing">
+                                    <html>
+                                        <head>
+                                            <meta name="viewport" content="width=device-width, initial-scale=1" />
+                                        </head>
+                                    <body>
+                                        <div className= "panel-body text-center">
+                                            <button className="button" id="withdraw">Withdraw</button>
+                                            <button className="button" id="deposit">Deposit</button>
                                         </div>
-                                        <div style={{overflowY: "scroll",
-                                                     height:"250px"}}
-                                         dir="ltr">
-                                            <div className="widget-content" >
-                                               
-                                                    <div className="transactions-list"  >
-                                                     
-                                                    <div className="t-item" >
-                                                        <div className="t-company-name">
-                                                                <div className="icon">
-                                                                    <img src={dai} className="flag-width" alt= "dai" style={{width:"40px"}} />
-                                                                </div>
-                                                            <div className="t-name">
-                                                                <h4>Dai</h4>
-                                                            </div>
-                                
-                                                        </div>
-                                                        
-                                                    </div>
-                                                       
-                                                       
+                                        <br></br>
+                                        <div className="panel-body text-center" >
+                                            <form action="/action_page.php" method="get">
+                                                <input list="hosting-plan" type="text"  id="amount" placeholder="Deposit/Withdraw Amount" style={{height:"40px", width:"450px"}} />
+                                                <datalist id="hosting-plan" >
+                                                    <option value="Dai"></option>
+                                                    <option value="Eth"></option>
+                                                    <option value="USDC"></option>
+                                                </datalist>
+                                            </form>
+                                            <br></br>     
+                                            <button className="button" id="optimize">Optimize</button>
+                                        </div>
+                                        <br></br>
+
+                                        <div className=" col-xl-12 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing " >
+        
+                                            <div className="widget widget-table-one" >
+                                                <div className= "widget-heading ">
+                                                    <h5 className="">Token Summary</h5>
                                                 </div>
-
-                                                <div className="transactions-list" >
-                                                        <div className="t-item">
-                                                            <div className="t-company-name">
-                                                                    <div className= "icon">
-                                                                            <img src={eth} className="flag-width" alt= "eth" style={{width:"40px"}}/>
+                                                <div style={{overflowY: "scroll",
+                                                        height:"250px"}}
+                                                        dir="ltr">
+                                                    <div className="widget-content" >
+                                                        <div className="transactions-list"  >
+                                                            <div className="t-item" >
+                                                                <div className="t-company-name">
+                                                                    <div className="icon">
+                                                                        <img src={dai} className="flag-width" alt= "dai" style={{width:"40px"}} />
                                                                     </div>
-                                                                <div className="t-name">
-                                                                    <h4>Ether</h4>
+                                                                    <div className="t-name">
+                                                                        <h4>Dai</h4>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                            
                                                         </div>
-                                                    </div>
-
-                                                <div className="transactions-list"  >
-                                                     
-                                                        <div className="t-item" >
-                                                            <div className="t-company-name">
+                                                        <div className="transactions-list" >
+                                                            <div className="t-item">
+                                                                <div className="t-company-name">
+                                                                    <div className= "icon">
+                                                                        <img src={eth} className="flag-width" alt= "eth" style={{width:"40px"}}/>
+                                                                    </div>
+                                                                    <div className="t-name">
+                                                                        <h4>Ether</h4>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="transactions-list"  >
+                                                            <div className="t-item" >
+                                                                <div className="t-company-name">
                                                                     <div className="icon">
                                                                         <img src={usdc} className="flag-width" alt="usdc" style= {{width:"40px", margin:"0px 5px"}}/>
                                                                     </div>
-                                                                <div className="t-name">
-                                                                    <h4>USDC</h4>
-                                                                </div>
-                                    
+                                                                    <div className="t-name">
+                                                                        <h4>USDC</h4>
+                                                                    </div>
+                                                                </div>    
                                                             </div>
-                                                            
                                                         </div>
-                                                           
-                                                           
-                                                    </div>
-
-                                                    <div className="transactions-list"  >
-                                                     
+                                                        <div className="transactions-list"  >
                                                             <div className="t-item" >
                                                                 <div className="t-company-name">
-                                                                        <div className="icon">
-                                                    
-                                                                            <img src={btc} className="flag-width" alt= "flag" style={{width:"40px",margin:"0px 5px"}}/>
-                                                                        </div>
+                                                                    <div className="icon">
+                                                                        <img src={btc} className="flag-width" alt= "flag" style={{width:"40px",margin:"0px 5px"}}/>
+                                                                    </div>
                                                                     <div className="t-name">
                                                                         <h4>WBTC</h4>
                                                                     </div>
-                                        
-                                                                </div>
-                                                                
-                                                            </div>
-                                                               
-                                                               
+                                                                </div>    
+                                                            </div>       
                                                         </div>
-                                                    
-                                
-                                                <div className="transactions-list" >
-                                                    <div className="t-item">
-                                                        <div className="t-company-name">
-                                                                <div className= "icon">
-                                                                   <img src={usdt} className="flag-width" alt="usdt" style= {{width:"40px"}}/>
-                                                                </div>
-                                                            <div className="t-name">
-                                                                <h4>USDT</h4>
-                                                           </div>
-                                                        </div>
-                                                        
-                                                    </div>
-                                                </div>
-
-                                                <div className="transactions-list" >
-                                                        <div className="t-item">
-                                                            <div className="t-company-name">
-                                                                    <div className= "icon">
-                                                                       <img src={zrx} className="flag-width" alt="zrx" style= {{width:"40px"}}/>
-                                                                    </div>
-                                                                <div className="t-name">
-                                                                    <h4>ZRX</h4>
-                                                               </div>
-                                                            </div>
-                                                            
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="transactions-list" >
+                                                        <div className="transactions-list" >
                                                             <div className="t-item">
                                                                 <div className="t-company-name">
-                                                                        <div className= "icon">
-                                                                           <img src={maker} className="flag-width" alt="maker" style= {{width:"40px",margin:"0px 5px"}}/>
-                                                                        </div>
+                                                                    <div className= "icon">
+                                                                        <img src={usdt} className="flag-width" alt="usdt" style= {{width:"40px"}}/>
+                                                                    </div>
+                                                                    <div className="t-name">
+                                                                        <h4>USDT</h4>
+                                                                    </div>
+                                                                </div>    
+                                                            </div>
+                                                        </div>
+                                                        <div className="transactions-list" >
+                                                            <div className="t-item">
+                                                                <div className="t-company-name">
+                                                                    <div className= "icon">
+                                                                        <img src={zrx} className="flag-width" alt="zrx" style= {{width:"40px"}}/>
+                                                                    </div>
+                                                                    <div className="t-name">
+                                                                        <h4>ZRX</h4>
+                                                                </div>
+                                                                </div> 
+                                                            </div>
+                                                        </div>
+                                                        <div className="transactions-list" >
+                                                            <div className="t-item">
+                                                                <div className="t-company-name">
+                                                                    <div className= "icon">
+                                                                        <img src={maker} className="flag-width" alt="maker" style= {{width:"40px",margin:"0px 5px"}}/>
+                                                                    </div>
                                                                     <div className="t-name">
                                                                         <h4>MKR</h4>
                                                                    </div>
                                                                 </div>
-                                                                
                                                             </div>
                                                         </div>
-                                            </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                
-                                
                                     </body>
                                     </html> 
+                                </div>
                                     </div>
                                 </div>
-                                
-                         </div>
                            
-                         <div className="col-xl-3 col-lg-2 col-md-2 col-sm-2 col-4 layout-spacing">
-                        <div className="widget widget-activity-three">
+                                <div className="col-xl-3 col-lg-2 col-md-2 col-sm-2 col-4 layout-spacing">
+                                    <div className="widget widget-activity-three">
+                                        <div className="widget-heading">
+                                            <h5 className="">Transfer Logs</h5>
+                                        </div>
+                                        <div className="widget-content">
+                                            <div className="mt-container mx-auto">
+                                                <div className="timeline-line">
+                                                    <ul id="all-logs">
 
-                            <div className="widget-heading">
-                                <h5 className="">Transfer Logs</h5>
-                            </div>
-
-                            <div className="widget-content">
-
-                                <div className="mt-container mx-auto">
-                                    <div className="timeline-line">
-                                        <ul id="all-logs">
-
-                                        </ul>
+                                                    </ul>
                                                 
-                                        <li id="template" style={{display: "none"}}>
-                                            <div className="item-timeline timeline-new">
-                                                <div className="t-dot">
-                                                    <div className="t-danger"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="feather feather-check"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-                                                </div>
-                                                <div className="t-content">
-                                                    <h6 id = "time"></h6>
-                                                    <div className="t-uppercontent">
-                                                        <h5 id = "text"><span></span></h5>
-                                                    </div>
-                                                    <p id = "hash"><span></span></p>   
-                                                </div>
-                                            </div>
-                                        </li>
+                                                    <li id="template" style={{display: "none"}}>
+                                                        <div className="item-timeline timeline-new">
+                                                            <div className="t-dot">
+                                                                <div className="t-danger"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="feather feather-check"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                                                            </div>
+                                                            <div className="t-content">
+                                                                <h6 id = "time"></h6>
+                                                                <div className="t-uppercontent">
+                                                                    <h5 id = "text"><span></span></h5>
+                                                                </div>
+                                                                <p id = "hash"><span></span></p>   
+                                                            </div>
+                                                        </div>
+                                                    </li>
 
-                                    </div>
-                                </div> 
-                            </div>
-                        </div> 
-                    </div>
+                                                </div>
+                                            </div> 
+                                        </div>
+                                    </div> 
+                                </div>
                 
                                 <div className="col-xl-12 col-lg-6 col-md-2 col-sm-2 col-2 layout-spacing" >
                                     <div className="widget widget-activity-four">
@@ -1058,127 +962,125 @@ class App extends Component {
                                         <div className="widget-heading">
                                             <h5 className=""> Supply Interest Rate</h5>
                                         </div>
-
-
                                         <div className="widget-content">
                                             <div style={{ overflowY: "scroll", height: "300px" }} dir="ltr">
+                                                <table className="table">
+                                                    <thead>
+                                                        <tr >
+                                                            <th><div className="th-content"></div></th>
+                                                            <th>
+                                                                <div className="th-content">
+                                                                    <div className="w-icon" >
+                                                                        <a href="javascript:void(0);"><img src={compoundf} className="flag-width" alt="compoundf" style={{ width: "50px" }} /></a>
+                                                                    </div>
+                                                                </div>
+                                                            </th>
+                                                            <th>
+                                                                <div className="th-content">
+                                                                    <div className="w-icon">
+                                                                        <a href="javascript:void(0);"><img src={aave} className="flag-width" alt="aave" style={{ width: "50px" }} /></a>
+                                                                    </div>
+                                                                </div>
+                                                            </th>
+                                                            <th>
+                                                                <div className="th-content">
+                                                                    <div className="w-icon">
+                                                                        <a href="javascript:void(0);"><img src={dxdy} className="flag-width" alt="dxdy" style={{ width: "50px" }} /></a>
+                                                                    </div>
+                                                                </div>
+                                                            </th>
+                                                            <th>
+                                                                <div className="th-content th-heading">
+                                                                    <div className="w-icon">
+                                                                        <a href="javascript:void(0);"><img src={curve} className="flag-width" alt="curve" style={{ width: "40px" }} /></a>
+                                                                    </div>
+                                                                </div>
+                                                            </th>
+
+                                                            <th>
+                                                                <div className="th-content">
+                                                                    <div className="w-icon">
+                                                                        <a href="javascript:void(0);"><img src={maker} className="flag-width" alt="maker" style={{ width: "40px" }} /></a>
+                                                                    </div>
+                                                                </div>
+                                                            </th>
+
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr >
+                                                            <td><div className="td-content product-name" ><h5>DAI</h5></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+
+                                                        </tr>
+                                                        <tr >
+                                                            <td><div className="td-content product-name"><h5>ETH</h5></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><div className="td-content product-name"><h5>USDC</h5></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+
+                                                            <td><div className="td-content"></div></td>
+
+                                                        </tr>
+                                                        <tr >
+                                                            <td><div className="td-content product-name"><h5>WBTC</h5></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><div className="td-content product-name"><h5>USDT</h5></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><div className="td-content product-name"><h5>ZRX</h5></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><div className="td-content product-name"><h5>MKR</h5></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+                                                            <td><div className="td-content"></div></td>
+
+                                                        </tr>
 
 
-                                                        <table className="table">
-
-
-                                                            <thead>
-                                                                <tr >
-                                                                    <th><div className="th-content"></div></th>
-                                                                    <th><div className="th-content">
-                                                                        <div className="w-icon" >
-                                                                            <a href="javascript:void(0);"><img src={compoundf} className="flag-width" alt="compoundf" style={{ width: "50px" }} /></a>
-                                                                        </div></div></th>
-                                                                    <th><div className="th-content">
-                                                                        <div className="w-icon">
-                                                                            <a href="javascript:void(0);"><img src={aave} className="flag-width" alt="aave" style={{ width: "50px" }} /></a>
-                                                                        </div></div></th>
-                                                                    <th><div className="th-content">
-                                                                        <div className="w-icon">
-                                                                            <a href="javascript:void(0);"><img src={dxdy} className="flag-width" alt="dxdy" style={{ width: "50px" }} /></a>
-                                                                        </div>
-                                                                    </div></th>
-                                                                    <th><div className="th-content th-heading">
-                                                                        <div className="w-icon">
-                                                                            <a href="javascript:void(0);"><img src={curve} className="flag-width" alt="curve" style={{ width: "40px" }} /></a>
-                                                                        </div></div></th>
-
-                                                                    <th><div className="th-content">
-                                                                        <div className="w-icon">
-                                                                            <a href="javascript:void(0);"><img src={maker} className="flag-width" alt="maker" style={{ width: "40px" }} /></a>
-
-                                                                        </div></div></th>
-
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-
-
-                                                                <tr >
-                                                                    <td><div className="td-content product-name" ><h5>DAI</h5></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-
-                                                                </tr>
-                                                                <tr >
-                                                                    <td><div className="td-content product-name"><h5>ETH</h5></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><div className="td-content product-name"><h5>USDC</h5></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-
-                                                                    <td><div className="td-content"></div></td>
-
-                                                                </tr>
-                                                                <tr >
-                                                                    <td><div className="td-content product-name"><h5>WBTC</h5></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><div className="td-content product-name"><h5>USDT</h5></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><div className="td-content product-name"><h5>ZRX</h5></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><div className="td-content product-name"><h5>MKR</h5></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-                                                                    <td><div className="td-content"></div></td>
-
-                                                                </tr>
-
-
-                                                            </tbody>
-                                                        </table>
-                                                    
-                                               
+                                                    </tbody>
+                                                </table>  
                                             </div>
                                         </div>
-
                                     </div>
-
                                 </div>
 
-
-
                             </div>
-
                         </div>
                     </div>
                 </div>
