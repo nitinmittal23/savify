@@ -923,7 +923,7 @@ class App extends Component {
                                             <button className="button" id="deposit">Deposit</button>
                                         </div>
                                         <br></br>
-                                        <div className="panel-body text-center" >
+                                        <div className="panel-body text-center">
                                             <form action="/action_page.php" method="get">
                                                 <input list="hosting-plan" type="text"  id="amount" placeholder="Deposit/Withdraw Amount" style={{height:"40px", width:"450px"}} />
                                                 <datalist id="hosting-plan" >
@@ -990,7 +990,7 @@ class App extends Component {
                                                                         <img src={btc} className="flag-width" alt= "flag" style={{width:"40px",margin:"0px 5px"}}/>
                                                                     </div>
                                                                     <div className="t-name">
-                                                                        <h4>WBTC</h4>
+                                                                        <h4>0 WBTC</h4>
                                                                     </div>
                                                                 </div>    
                                                             </div>       
@@ -1002,7 +1002,7 @@ class App extends Component {
                                                                         <img src={usdt} className="flag-width" alt="usdt" style= {{width:"40px"}}/>
                                                                     </div>
                                                                     <div className="t-name">
-                                                                        <h4>USDT</h4>
+                                                                        <h4>0 USDT</h4>
                                                                     </div>
                                                                 </div>    
                                                             </div>
@@ -1014,7 +1014,7 @@ class App extends Component {
                                                                         <img src={zrx} className="flag-width" alt="zrx" style= {{width:"40px"}}/>
                                                                     </div>
                                                                     <div className="t-name">
-                                                                        <h4>ZRX</h4>
+                                                                        <h4>0 ZRX</h4>
                                                                 </div>
                                                                 </div> 
                                                             </div>
@@ -1026,7 +1026,7 @@ class App extends Component {
                                                                         <img src={maker} className="flag-width" alt="maker" style= {{width:"40px",margin:"0px 5px"}}/>
                                                                     </div>
                                                                     <div className="t-name">
-                                                                        <h4>MKR</h4>
+                                                                        <h4>0 MKR</h4>
                                                                    </div>
                                                                 </div>
                                                             </div>
