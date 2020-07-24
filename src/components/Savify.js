@@ -26,17 +26,8 @@ import zrx from './images/zrx.PNG';
 import axios from 'axios';
 import dashboard from "./images/download.png";
 import Footer from "./footer.js";
-
-
-import {
-    genericDSAtoggle,
-    genericDSAdeposit,
-    genericDSAwithdraw
-  } from "../DSA/utils";
-  import {
-    genericResolver,
-    getBalances
-  } from "../DSA/resolvers";
+import {genericDSAtoggle, genericDSAdeposit, genericDSAwithdraw} from "../DSA/utils";
+import {genericResolver, getBalances} from "../DSA/resolvers";
 
 const DSA = require("dsa-sdk");
 
@@ -61,6 +52,7 @@ class App extends Component {
                 dydx: {},
                 curve: {}
             },
+            amount: 0,
             buttonText: "Connect",
             buttonDisabled: true,
             shortnerAddress: "",
@@ -132,10 +124,6 @@ class App extends Component {
         this.login();
       
     }
-  
-    // async componentWillMount() {
-        
-    // }
 
     login = async () => {
         try {
@@ -209,6 +197,7 @@ class App extends Component {
         // change to this.state.account does this requires address as string?
           
     }
+
     async createAccount(){
         var newDsaAddress = await this.state.dsa.build({
             gasPrice: this.state.web3.utils.toWei("27", "gwei"),
@@ -455,9 +444,9 @@ class App extends Component {
         let daiamount = 0;
         let ethamount = 0;
         let usdcamount = 0;
-        if(daichange == true){daiamount = this.state.totalSupply.dai;}
-        if(ethchange == true){ethamount = this.state.totalSupply.eth;}
-        if(usdcchange == true){usdcamount = this.state.totalSupply.usdc;}
+        if(daichange === true){daiamount = this.state.totalSupply.dai;}
+        if(ethchange === true){ethamount = this.state.totalSupply.eth;}
+        if(usdcchange === true){usdcamount = this.state.totalSupply.usdc;}
         const details = {
             fromTodai: message2,
             fromToeth: message1,
@@ -476,8 +465,9 @@ class App extends Component {
             });
     }
 
-    async deposit(amount){
+    async deposit(){
         try {
+            let amount = this.state.amount;
             let spells = await this.state.dsa.Spell();
             spells = await genericDSAdeposit(
                 spells,
@@ -499,8 +489,9 @@ class App extends Component {
         }
     }
 
-    async withdraw(amount){
+    async withdraw(){
         try {
+            let amount = this.state.amount;
             let spells = await this.state.dsa.Spell();
             spells = await genericDSAwithdraw(
                 spells,
@@ -534,7 +525,7 @@ class App extends Component {
         try {
             let spells = await this.state.dsa.Spell();
             if(this.state.dsa.totalSupply["eth"]>0){
-                if(this.state.protocolassetPresent["eth"] != this.state.protocolinterestmax["eth"]){
+                if(this.state.protocolassetPresent["eth"] !== this.state.protocolinterestmax["eth"]){
                     message1 = this.state.protocolassetPresent["eth"] +  " to " + this.state.protocolinterestmax["eth"];
                     ethchange = true;
                     spells = await genericDSAtoggle(
@@ -547,7 +538,7 @@ class App extends Component {
                 }
             }
             if(this.state.dsa.totalSupply["dai"]>0){
-                if(this.state.protocolassetPresent["dai"] != this.state.protocolinterestmax["dai"]){
+                if(this.state.protocolassetPresent["dai"] !== this.state.protocolinterestmax["dai"]){
                     message2 = this.state.protocolassetPresent["dai"] +  " to " + this.state.protocolinterestmax["dai"];
                     ethchange = true;
                     spells = await genericDSAtoggle(
@@ -560,7 +551,7 @@ class App extends Component {
                 }
             }
             if(this.state.dsa.totalSupply["usdc"]>0){
-                if(this.state.protocolassetPresent["usdc"] != this.state.protocolinterestmax["usdc"]){
+                if(this.state.protocolassetPresent["usdc"] !== this.state.protocolinterestmax["usdc"]){
                     message3 = this.state.protocolassetPresent["usdc"] +  " to " + this.state.protocolinterestmax["usdc"];
                     usdcchange = true;
                     spells = await genericDSAtoggle(
@@ -597,20 +588,25 @@ class App extends Component {
             transaction: e.target.value
         })
     }
+
     onChangeselectedAsset(e) {
         this.setState({
             assetSelected: e.target.value
         })
     }
+
     onChangeToggleSelectedAsset (e) {
         this.setState({
             toggleassetSelected: e.target.value
         })
     }
-    onChangeAmount(e) {
-        this.setState({
-            amount: e.target.value
-        })
+
+    onChangeAmount(evt) {
+        try {
+            this.setState({ amount: evt.target.value });
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     handleAssetChange = (evt) => {
@@ -626,31 +622,6 @@ class App extends Component {
     render() {
         return (
             <div>
-                {/* <div id = "navbar" className="header-container fixed-top shadow p-0">
-                    <div> 
-                        <img src={savifycopy} href="/" alt="SaviFi"  align="left" className="savify-image"/>
-                    </div>
-                    <div  id = "test" className="header navbar navbar-expand-sm flex-md-nowrap">
-                        <button onClick={this.createAccount} align="right" disabled={this.state.buttonDisabled}>
-                            {this.state.buttonText}{" "}
-                        </button>
-                    </div>    
-                </div>
-
-
-                {/* <div id = "whole">
-                    <div>
-                        <h1>{this.state.interestRate.Dai.compound}</h1>
-                    </div>
-                    <select
-                        className="select-Asset"
-                        onChange={this.handleAssetChange}
-                    >
-                        <option>{ETH}</option>
-                        <option>DAI</option>
-                        <option>USDC</option>
-                    </select>
-                </div> */}
                 
                 <div className="header-container fixed-top">
                     <div> 
@@ -912,32 +883,37 @@ class App extends Component {
                                         </div>
                                     </div>
                                 </div>
-                    </div>
+                                </div>
                      
                                 <div className="col-xl-6 col-lg-6 col-md-2 col-sm-2 col-4 layout-spacing">
                                     <div className="widget widget-activity-four">
                                         <div className="layout-px-spacing">
                                     
-                                        <div className= "panel-body text-center">
-                                            <button className="button" id="withdraw">Withdraw</button>
-                                            <button className="button" id="deposit">Deposit</button>
-                                        </div>
-                                        <br></br>
-                                        <div className="panel-body text-center">
-                                            <form action="/action_page.php" method="get">
-                                                <input list="hosting-plan" type="text"  id="amount" placeholder="Deposit/Withdraw Amount" style={{height:"40px", width:"450px"}} />
-                                                <datalist id="hosting-plan" >
-                                                    <option value="Dai"></option>
-                                                    <option value="Eth"></option>
-                                                    <option value="USDC"></option>
-                                                </datalist>
-                                            </form>
-                                            <br></br>     
-                                            <button className="button" id="optimize">Optimize</button>
-                                        </div>
-                                        <br></br>
+                                            <div className= "panel-body text-center">
+                                                <button onClick={this.withdraw} className="button" id="withdraw" >Withdraw</button>
+                                                <button onClick={this.deposit} className="button" id="deposit" >Deposit </button>
+                                            </div>
+                                            <br></br>
+                                            <div className="panel-body text-center">
+                                                <form action="/action_page.php" method="get">
+                                                    <select  id="token"  className="select-Asset"
+                                                    onChange={this.handleAssetChange} style={{height:"40px", width:"70px", marginLeft:"20px"}}>
 
-                                        <div className=" col-xl-12 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing " >
+                                                        <option value="eth">Eth </option>
+                                                        <option value="dai">Dai</option>
+                                                        <option value="usdc">USDC</option>
+                                                    </select>
+                                                    <input list="hosting-plan"  type="number"
+                                                        onChange={this.onChangeAmount}
+                                                        placeholder={`Amount`}  id="asset"  style={{height:"40px", width:"330px"}} />
+                                                </form>
+                                                <br></br>     
+                                                <button onClick={this.toggle} className="button" id="optimize"  >Optimize
+                                                </button>
+                                            </div>
+                                            <br></br>
+
+                                            <div className=" col-xl-12 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing " >
         
                                             <div className="widget widget-table-one" >
                                                 <div className= "widget-heading ">
@@ -1036,7 +1012,7 @@ class App extends Component {
                                             </div>
                                         </div>
                                     
-                                </div>
+                                        </div>
                                     </div>
                                 </div>
                            
@@ -1190,4 +1166,5 @@ class App extends Component {
         );
     }
 }
+
 export default App;
