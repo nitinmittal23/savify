@@ -61,6 +61,7 @@ class App extends Component {
                 dydx: {},
                 curve: {}
             },
+            amount: 0,
             buttonText: "Connect",
             buttonDisabled: true,
             shortnerAddress: "",
@@ -612,6 +613,14 @@ class App extends Component {
             amount: e.target.value
         })
     }
+    handleDepositAmountChange = (evt) => {
+        try {
+          this.setState({ amount: evt.target.value });
+        } catch (err) {
+          this.setState({ errMessage: "Connect your Metamask Wallet First" });
+          this.showErrorModal(evt);
+        }
+      };
 
     handleAssetChange = (evt) => {
         try {
@@ -919,21 +928,26 @@ class App extends Component {
                                         <div className="layout-px-spacing">
                                     
                                         <div className= "panel-body text-center">
-                                            <button className="button" id="withdraw">Withdraw</button>
-                                            <button className="button" id="deposit">Deposit</button>
+                                            <button className="button" id="withdraw" onClick={this.withdraw(this.state.amount)} >Withdraw</button>
+                                            <button className="button" id="deposit" onClick={this.deposit(this.state.amount)}>Deposit </button>
                                         </div>
                                         <br></br>
                                         <div className="panel-body text-center" >
                                             <form action="/action_page.php" method="get">
-                                                <input list="hosting-plan" type="text"  id="amount" placeholder="Deposit/Withdraw Amount" style={{height:"40px", width:"450px"}} />
-                                                <datalist id="hosting-plan" >
-                                                    <option value="Dai"></option>
-                                                    <option value="Eth"></option>
-                                                    <option value="USDC"></option>
-                                                </datalist>
+                                                {/* <select  id="token"  className="select-Asset"
+                                                onChange={this.handleAssetChange} style={{height:"40px", width:"200px", marginLeft:"20px"}}>
+
+                                                    <option value="eth">Eth </option>
+                                                    <option value="dai">Dai</option>
+                                                    <option value="usdc">USDC</option>
+                                                </select> */}
+                                                <input list="hosting-plan"  type="number"
+                                                    onChange={this.handleDepositAmountChange}
+                                                    placeholder={`Amount`}  id="asset"  style={{height:"40px", width:"200px"}} />
                                             </form>
                                             <br></br>     
-                                            <button className="button" id="optimize">Optimize</button>
+                                            <button className="button" id="optimize"  onClick={this.toggle}>Optimize
+                                            </button>
                                         </div>
                                         <br></br>
 
