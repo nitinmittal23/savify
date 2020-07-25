@@ -40,7 +40,13 @@ router.route('/update/:id').post((req, res) => {
             // user.protocol_dai =Request.body.protocol_dai
             // user.protocol_eth =Request.body.protocol_eth
             // user.protocol_usdc =Request.body.protocol_usdc
-            user.trans.push({fromTo: req.body.fromTo, amount: req.body.amount, type: req.body.type})
+            user.trans.push({
+                fromTodai: req.body.daimessage,
+                fromToeth: req.body.ethmessage,
+                fromTousdc: req.body.usdcmessage,
+                Daiamount: req.body.daiamount,
+                Ethamount: req.body.ethamount,
+                Usdcamount: req.body.usdcamount,})
             
             user.save()
                 .then(() => res.json('user updated!'))
