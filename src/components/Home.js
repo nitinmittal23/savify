@@ -35,7 +35,7 @@ class Home extends Component {
 
 
                     <div className="buttonstart">
-                        <a href="#" className="btnbtn">Get Started</a>
+                        <a href="/sav" className="btnbtn">Get Started</a>
                     </div>
                  </div>
 

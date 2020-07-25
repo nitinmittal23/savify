@@ -25,11 +25,6 @@ import usdt from './images/usdt.PNG';
 import zrx from './images/zrx.PNG';
 import axios from 'axios';
 import dashboard from "./images/download.png";
-
-
-
-
-
 import Footer from "./footer.js";
 import {genericDSAtoggle, genericDSAdeposit, genericDSAwithdraw} from "../DSA/utils";
 import {genericResolver, getBalances} from "../DSA/resolvers";
