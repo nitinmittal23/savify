@@ -28,8 +28,29 @@ import dashboard from "./images/download.png";
 import Footer from "./footer.js";
 import {genericDSAtoggle, genericDSAdeposit, genericDSAwithdraw} from "../DSA/utils";
 import {genericResolver, getBalances} from "../DSA/resolvers";
-
 const DSA = require("dsa-sdk");
+
+const Transaction = props => (
+    <li key = {props.transaction._id.toString()}>
+        <div className="item-timeline timeline-new">
+            <div className="t-dot">
+                <div className="t-danger"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-check"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+            </div>
+            <div className="t-content">
+                <p id = "time" style = {{color:"black"}}>{props.transaction.createdAt}</p>
+                <p style = {{fontWeight: "bold", color:"black"}}>DAI {props.transaction.Daiamount}</p>
+                <p id = "text"><span>{props.transaction.fromTodai}</span></p>
+                
+                <p style = {{fontWeight: "bold", color:"black"}}>ETH {props.transaction.Ethamount}</p>
+                <p id = "text"><span>{props.transaction.fromToeth}</span></p>
+               
+                <p style = {{fontWeight: "bold", color:"black"}}>USDC {props.transaction.Usdcamount}</p>
+                <p id = "text"><span>{props.transaction.fromTousdc}</span></p>
+                
+            </div>
+        </div>
+    </li>
+)
 
 class App extends Component {
     constructor(props) {
@@ -44,6 +65,18 @@ class App extends Component {
         this.withdraw = this.withdraw.bind(this);
         this.loadBlockchainData = this.loadBlockchainData.bind(this);
         this.showInterestModal = this.showInterestModal.bind(this);
+        this.toggle = this.toggle.bind(this);
+        this.getAssetsPresentIn = this.getAssetsPresentIn.bind(this);
+        this.deposit = this.deposit.bind(this);
+        this.withdraw = this.withdraw.bind(this);
+        this.handleAssetChange = this.handleAssetChange.bind(this);
+        this.updateToggleTransaction = this.updateToggleTransaction.bind(this);
+        this.updateUserData = this.updateUserData.bind(this);
+        this.getUserdata = this.getUserdata.bind(this);
+        this.createUserdata = this.createUserdata.bind(this);
+        this.dashboardupdate = this.dashboardupdate.bind(this);
+
+
         this.state = {
             resolvers: {
                 compound: {},
@@ -114,7 +147,7 @@ class App extends Component {
                 eth: 0,
                 usdc: 0,
             },
-            transaction: [{}],
+            transaction: [],
             dsa_id: 0,
             assetSelected: "eth",
             toggleassetSelected: "eth",
@@ -335,42 +368,42 @@ class App extends Component {
         const aav = await dsa.aave.getPosition(this.state.dsaAddress);
         const dd = await dsa.dydx.getPosition(this.state.dsaAddress);
         
-        let daiprotocol= "";
+        let daiprotocol= "NA";
         let daiamount = 0;
-        let ethprotocol = "";
+        let ethprotocol = "NA";
         let ethamount = 0;
-        let usdcprotocol = "";
+        let usdcprotocol = "NA";
         let usdcamount = 0;
 
-        if(com["dai"].supply>=aav["dai"].supply && com["dai"].supply>=dd["dai"].supply){
+        if(com["dai"].supply>aav["dai"].supply && com["dai"].supply>dd["dai"].supply){
             daiprotocol = "compound";
             daiamount = com["dai"].supply;
-        } else if (aav["dai"].supply>=com["dai"].supply && aav["dai"].supply>=dd["dai"].supply){
+        } else if (aav["dai"].supply>com["dai"].supply && aav["dai"].supply>dd["dai"].supply){
             daiprotocol = "aave";
             daiamount = aav["dai"].supply;
-        } else if (dd["dai"].supply>=aav["dai"].supply && dd["dai"].supply>=com["dai"].supply){
+        } else if (dd["dai"].supply>aav["dai"].supply && dd["dai"].supply>com["dai"].supply){
             daiprotocol = "dydx";
             daiamount = dd["dai"].supply;
         }
 
-        if(com["eth"].supply>=aav["eth"].supply && com["eth"].supply>=dd["eth"].supply){
+        if(com["eth"].supply>aav["eth"].supply && com["eth"].supply>dd["eth"].supply){
             ethprotocol = "compound";
             ethamount = com["eth"].supply;
-        } else if (aav["eth"].supply>=com["eth"].supply && aav["eth"].supply>=dd["eth"].supply){
+        } else if (aav["eth"].supply>com["eth"].supply && aav["eth"].supply>dd["eth"].supply){
             ethprotocol = "aave";
             ethamount = aav["eth"].supply;
-        } else if (dd["eth"].supply>=aav["eth"].supply && dd["eth"].supply>=com["eth"].supply){
+        } else if (dd["eth"].supply>aav["eth"].supply && dd["eth"].supply>com["eth"].supply){
             ethprotocol = "dydx";
             ethamount = dd["eth"].supply;
         }
 
-        if(com["usdc"].supply>=aav["usdc"].supply && com["usdc"].supply>=dd["usdc"].supply){
+        if(com["usdc"].supply>aav["usdc"].supply && com["usdc"].supply>dd["usdc"].supply){
             usdcprotocol = "compound";
             usdcamount = com["usdc"].supply;
-        } else if (aav["usdc"].supply>=com["usdc"].supply && aav["usdc"].supply>=dd["usdc"].supply){
+        } else if (aav["usdc"].supply>com["usdc"].supply && aav["usdc"].supply>dd["usdc"].supply){
             usdcprotocol = "aave";
             usdcamount = aav["usdc"].supply;
-        } else if (dd["usdc"].supply>=aav["usdc"].supply && dd["usdc"].supply>=com["usdc"].supply){
+        } else if (dd["usdc"].supply>aav["usdc"].supply && dd["usdc"].supply>com["usdc"].supply){
             usdcprotocol = "dydx";
             usdcamount = dd["usdc"].supply;
         }
@@ -392,9 +425,9 @@ class App extends Component {
 
     async updateUserData(amount, message){
         const id = this.state.dsa_id;
-        let daimessage = "";
-        let ethmessage= "";
-        let usdcmessage = "";
+        let daimessage = "No change";
+        let ethmessage= "No change";
+        let usdcmessage = "No change";
         let daii;
         let ethh;
         let usdcc;
@@ -475,6 +508,7 @@ class App extends Component {
                 this.state.dsa.tokens.info[this.state.assetSelected].address,
                 this.state.dsa.tokens.fromDecimal(amount, this.state.assetSelected)
             );
+            console.log(spells)
             const tx = await this.state.dsa.cast({spells: spells})
                 .catch((err) => {
                     throw new Error("Transaction is likely to fail, Check you spells once!")
@@ -482,7 +516,6 @@ class App extends Component {
             if (tx) { 
                 var message = "deposit in " + this.state.protocolinterestmax[this.state.assetSelected];
                 await this.updateUserData(amount, message )
-                //update details in state;
             }
         } catch(err) {
             console.log(err.message)
@@ -492,23 +525,26 @@ class App extends Component {
     async withdraw(){
         try {
             let amount = this.state.amount;
-            let spells = await this.state.dsa.Spell();
-            spells = await genericDSAwithdraw(
-                spells,
-                this.state.protocolassetPresent[this.state.assetSelected],
-                this.state.dsa.tokens.info[this.state.assetSelected].address,
-                this.state.dsa.tokens.fromDecimal(amount, this.state.assetSelected),
-                this.state.account
-            );
-            const tx = await this.state.dsa.cast({spells: spells})
-                .catch((err) => {
-                    throw new Error("Transaction is likely to fail, Check you spells once!")
-                });
-            if (tx) { 
-                var message = "withdraw from " + this.state.protocolassetPresent[this.state.assetSelected];
-                await this.updateUserData(-1 * amount, message )
-                //update details in state;
+            if(this.state.protocolassetPresent[this.state.assetSelected]!=="NA"){
+                let spells = await this.state.dsa.Spell();
+                spells = await genericDSAwithdraw(
+                    spells,
+                    this.state.protocolassetPresent[this.state.assetSelected],
+                    this.state.dsa.tokens.info[this.state.assetSelected].address,
+                    this.state.dsa.tokens.fromDecimal(amount, this.state.assetSelected),
+                    this.state.account
+                );
+                const tx = await this.state.dsa.cast({spells: spells})
+                    .catch((err) => {
+                        throw new Error("Transaction is likely to fail, Check you spells once!")
+                    });
+                if (tx) { 
+                    var message = "withdraw from " + this.state.protocolassetPresent[this.state.assetSelected];
+                    await this.updateUserData(-1 * amount, message )
+                    //update details in state;
+                }
             }
+            
         } catch(err) {
             console.log(err.message);
         }
@@ -525,7 +561,7 @@ class App extends Component {
         try {
             let spells = await this.state.dsa.Spell();
             if(this.state.dsa.totalSupply["eth"]>0){
-                if(this.state.protocolassetPresent["eth"] !== this.state.protocolinterestmax["eth"]){
+                if((this.state.protocolassetPresent["eth"] !== this.state.protocolinterestmax["eth"]) && (this.state.protocolassetPresent["eth"] !== "NA") ){
                     message1 = this.state.protocolassetPresent["eth"] +  " to " + this.state.protocolinterestmax["eth"];
                     ethchange = true;
                     spells = await genericDSAtoggle(
@@ -537,8 +573,10 @@ class App extends Component {
                     );
                 }
             }
-            if(this.state.dsa.totalSupply["dai"]>0){
-                if(this.state.protocolassetPresent["dai"] !== this.state.protocolinterestmax["dai"]){
+            if(this.state.totalSupply["dai"]>0){
+                console.log(this.state.protocolassetPresent["dai"]);
+                console.log(this.state.protocolinterestmax["dai"])
+                if((this.state.protocolassetPresent["dai"] !== this.state.protocolinterestmax["dai"]) && (this.state.protocolassetPresent["dai"] !== "NA")){
                     message2 = this.state.protocolassetPresent["dai"] +  " to " + this.state.protocolinterestmax["dai"];
                     ethchange = true;
                     spells = await genericDSAtoggle(
@@ -551,7 +589,7 @@ class App extends Component {
                 }
             }
             if(this.state.dsa.totalSupply["usdc"]>0){
-                if(this.state.protocolassetPresent["usdc"] !== this.state.protocolinterestmax["usdc"]){
+                if((this.state.protocolassetPresent["usdc"] !== this.state.protocolinterestmax["usdc"]) && (this.state.protocolassetPresent["usdc"] !== "NA")){
                     message3 = this.state.protocolassetPresent["usdc"] +  " to " + this.state.protocolinterestmax["usdc"];
                     usdcchange = true;
                     spells = await genericDSAtoggle(
@@ -618,6 +656,12 @@ class App extends Component {
             console.log(this.state.errMessage);
         } 
     };
+
+    transactionList() {
+        return this.state.transaction.map(currenttransaction => {
+          return <Transaction transaction={currenttransaction}/>;
+        })
+    }
 
     render() {
         return (
@@ -1024,31 +1068,12 @@ class App extends Component {
                                         <div className="widget-content">
                                             <div className="mt-container mx-auto">
                                                 <div className="timeline-line">
-                                                    <ul id="all-logs">
-
-                                                    </ul>
-                                                
-                                                    <li id="template" style={{display: "none"}}>
-                                                        <div className="item-timeline timeline-new">
-                                                            <div className="t-dot">
-                                                                <div className="t-danger"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-check"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-                                                            </div>
-                                                            <div className="t-content">
-                                                                <h6 id = "time"></h6>
-                                                                <div className="t-uppercontent">
-                                                                    <h5 id = "text"><span></span></h5>
-                                                                </div>
-                                                                <p id = "hash"><span></span></p>   
-                                                            </div>
-                                                        </div>
-                                                    </li>
-
+                                                    { this.transactionList() }         
                                                 </div>
                                             </div> 
                                         </div>
                                     </div> 
                                 </div>
-                
                                 <div className="col-xl-12 col-lg-6 col-md-2 col-sm-2 col-2 layout-spacing" >
                                     <div className="widget widget-activity-four">
 
@@ -1154,7 +1179,6 @@ class App extends Component {
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
