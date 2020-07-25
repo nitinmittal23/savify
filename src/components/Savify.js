@@ -25,9 +25,15 @@ import usdt from './images/usdt.PNG';
 import zrx from './images/zrx.PNG';
 import axios from 'axios';
 import dashboard from "./images/download.png";
+
+
+
+
+
 import Footer from "./footer.js";
 import {genericDSAtoggle, genericDSAdeposit, genericDSAwithdraw} from "../DSA/utils";
 import {genericResolver, getBalances} from "../DSA/resolvers";
+
 const DSA = require("dsa-sdk");
 
 const Transaction = props => (
@@ -929,7 +935,7 @@ class App extends Component {
                                 </div>
                                 </div>
                      
-                                <div className="col-xl-6 col-lg-6 col-md-2 col-sm-2 col-4 layout-spacing">
+                    <div className="col-xl-6 col-lg-6 col-md-2 col-sm-2 col-4 layout-spacing">
                                     <div className="widget widget-activity-four">
                                         <div className="layout-px-spacing">
                                     
@@ -1055,8 +1061,12 @@ class App extends Component {
                                                 </div>
                                             </div>
                                         </div>
+
+                                </div>
+
                                     
-                                        </div>
+        
+
                                     </div>
                                 </div>
                            
@@ -1183,9 +1193,13 @@ class App extends Component {
                         </div>
                     </div>
                 </div>
+
+                
+
                 <div style={{alignContent: "center"}}>
                     <Footer />
                 </div>
+
             </div>    
         );
     }
