@@ -27,6 +27,9 @@ import axios from 'axios';
 import dashboard from "./images/download.png";
 
 
+
+
+
 import {
     genericDSAtoggle,
     genericDSAdeposit,
@@ -792,32 +795,33 @@ class App extends Component {
                                 </div>
                     </div>
                      
-                                <div className="col-xl-6 col-lg-6 col-md-2 col-sm-2 col-4 layout-spacing">
+                    <div className="col-xl-6 col-lg-6 col-md-2 col-sm-2 col-4 layout-spacing">
                                     <div className="widget widget-activity-four">
                                         <div className="layout-px-spacing">
-                                    <html>
-                                        <head>
-                                            <meta name="viewport" content="width=device-width, initial-scale=1" />
-                                        </head>
-                                    <body>
-                                        <div className= "panel-body text-center">
-                                            <button className="button" id="withdraw">Withdraw</button>
-                                            <button className="button" id="deposit">Deposit</button>
-                                        </div>
-                                        <br></br>
-                                        <div className="panel-body text-center" >
-                                            <form action="/action_page.php" method="get">
-                                                <input list="hosting-plan" type="text"  id="amount" placeholder="Deposit/Withdraw Amount" style={{height:"40px", width:"450px"}} />
-                                                <datalist id="hosting-plan" >
-                                                    <option value="Dai"></option>
-                                                    <option value="Eth"></option>
-                                                    <option value="USDC"></option>
-                                                </datalist>
-                                            </form>
-                                            <br></br>     
-                                            <button className="button" id="optimize">Optimize</button>
-                                        </div>
-                                        <br></br>
+                                    
+                                            <div className= "panel-body text-center">
+                                                <button onClick={this.withdraw} className="button" id="withdraw" >Withdraw</button>
+                                                <button onClick={this.deposit} className="button" id="deposit" >Deposit </button>
+                                            </div>
+                                            <br></br>
+                                            <div className="panel-body text-center">
+                                                <form action="/action_page.php" method="get">
+                                                    <select  id="token"  className="select-Asset"
+                                                    onChange={this.handleAssetChange} style={{height:"40px", width:"70px", marginLeft:"20px"}}>
+
+                                                        <option value="eth">Eth </option>
+                                                        <option value="dai">Dai</option>
+                                                        <option value="usdc">USDC</option>
+                                                    </select>
+                                                    <input list="hosting-plan"  type="number"
+                                                        onChange={this.onChangeAmount}
+                                                        placeholder={`Amount`}  id="asset"  style={{height:"40px", width:"330px"}} />
+                                                </form>
+                                                <br></br>     
+                                                <button onClick={this.toggle} className="button" id="optimize"  >Optimize
+                                                </button>
+                                            </div>
+                                            <br></br>
 
                                         <div className=" col-xl-12 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing " >
         
@@ -917,8 +921,6 @@ class App extends Component {
                                                 </div>
                                             </div>
                                         </div>
-                                    </body>
-                                    </html> 
                                 </div>
                                     </div>
                                 </div>
@@ -1084,6 +1086,7 @@ class App extends Component {
                         </div>
                     </div>
                 </div>
+                
             </div>    
         );
     }
