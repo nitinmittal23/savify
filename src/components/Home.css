@@ -38,10 +38,11 @@ nav{
     flex-basis:20%;
 }
 .logo img{
-    width:150px;
+    width:155px;
+    height: 70px;
     float:left;
-    border:1px solid #bad3d3 ;
-    background-color: #bad3d3;
+    /* border:1px solid #bad3d3 ;
+    background-color: #bad3d3; */
     padding-top:10px;
     padding-right:10px;
     padding-left:10px;
@@ -52,12 +53,14 @@ nav{
 .nav-links{
     flex: 1;
     text-align:right;
+    border-radius: 15px;
 }
 .nav-links ul li{
     list-style: none;
     display: inline-block;
     margin: 0 25px; 
     margin-top: 25px;
+    border-radius: 15px;
    
      
 }
@@ -70,6 +73,7 @@ nav{
     border: 1px solid #fff;
     background-color:#fff;
     transition:0.6s ease;
+    border-radius: 15px;
 }
 
 .nav-links ul li a:hover{
@@ -106,7 +110,8 @@ nav{
     position: absolute;
     top:60%;
     right:43%;
-    transform: transalte(-50%, 50%);
+    /* transform: translate(-50%, 50%); */
+    border-radius: 15px;
 }
 
 .btnbtn{
@@ -120,12 +125,14 @@ nav{
     border:1px solid #a70c4c;
     transition:0.6s ease;
     font-size: 25px;
+    border-radius: 15px;
  
 }
 
 .buttonstart btnbtn a:hover{
-    background-color: #85cde9;
+    background-color: #ffffff;
     color:#fff;
+    border-radius: 15px;
 }
 #about{
     padding-top: 50px;
@@ -136,6 +143,7 @@ nav{
 #about .btn{
     margin-top:20px;
     margin-bottom:30px;
+    border-radius: 15px;
 }
 .about-content{
     padding-top:20px;

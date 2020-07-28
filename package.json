@@ -9,6 +9,7 @@
     "authereum": "0.0.4-beta.164",
     "axios": "^0.19.2",
     "bootstrap": "^4.5.0",
+    "coingecko-api": "^1.0.10",
     "css-loader": "^3.6.0",
     "dsa-sdk": "^1.4.3",
     "react": "^16.13.1",

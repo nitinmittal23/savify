@@ -28,6 +28,7 @@ import dashboard from "./images/download.png";
 import Footer from "./footer.js";
 import {genericDSAtoggle, genericDSAdeposit, genericDSAwithdraw} from "../DSA/utils";
 import {genericResolver, getBalances} from "../DSA/resolvers";
+import {getPriceInUSD} from "./coinExhancePrice";
 
 const DSA = require("dsa-sdk");
 
@@ -76,7 +77,7 @@ class App extends Component {
         this.getUserdata = this.getUserdata.bind(this);
         this.createUserdata = this.createUserdata.bind(this);
         this.dashboardupdate = this.dashboardupdate.bind(this);
-
+        this.summary = this.summary.bind(this);
 
         this.state = {
             resolvers: {
@@ -153,6 +154,7 @@ class App extends Component {
             assetSelected: "eth",
             toggleassetSelected: "eth",
             amount: 0,
+            totalsupplyinUSD: 0
             
         };
         this.login();
@@ -245,6 +247,17 @@ class App extends Component {
         await this.getUserdata(dsa);
         await this.showInterestModal(dsa);
         await this.getAssetsPresentIn(dsa);
+        await this.summary(dsa);
+    }
+
+    async summary(dsa){
+        const dai = await getPriceInUSD(this.state.totalSupply.dai, "dai");
+        const eth = await getPriceInUSD(this.state.totalSupply.eth, "eth");
+        const usdc = await getPriceInUSD(this.state.totalSupply.usdc, "usdc");
+        var total = dai + eth + usdc;
+        this.setState({
+            totalsupplyinUSD: total
+        })
     }
 
     async showInterestModal(dsa){
@@ -781,7 +794,7 @@ class App extends Component {
                                             <div className="w-content">
                                                 <div className="w-info">
                                                     <p className="value" id ="intEarned">0</p> 
-                                                    <p className="value" id="">DAI</p>
+                                                    <p className="value" id="">USD</p>
                                                     <h6 className="">Interest Earned</h6>
                                                 </div>
                                                 <div className=""></div>
@@ -798,7 +811,7 @@ class App extends Component {
                                             <div className="w-content">
                                                 <div className="w-info">
                                                     <p className="value" id = "PAmount">0</p> 
-                                                    <p className="value" id="">DAI</p>
+                                                    <p className="value" id="">USD</p>
                                                     <h6 className="">Principal Amount</h6>
                                                 </div>
                                             <div className=""></div>          
@@ -815,8 +828,8 @@ class App extends Component {
                                         <div className="widget-content">
                                             <div className="w-content">
                                                 <div className="w-info">
-                                                    <p className="value" id="totalSupply">0</p>
-                                                    <p className="value" id="">DAI</p>
+                                                    <p className="value" id="totalSupply">{this.state.totalsupplyinUSD.toFixed(5)}</p>
+                                                    <p className="value" id="">USD</p>
                                                     <h6 className="">A/C Summary</h6>
                                                 </div> 
                                             </div>
